@@ -30,6 +30,11 @@ use alloc::boxed::Box;
 //      ---
 //       D
 
+/// According to the data sheet the TM1637 can address 6 display registers.
+/// Note that not all devices using it do as well. For example the 4-digit
+/// 7-segment display from AzDelivery only uses 4.
+pub const DISPLAY_REGISTERS: usize = 6;
+
 /// Shows which segment has which bit.
 #[repr(u8)]
 pub enum SegmentBits {
@@ -73,7 +78,7 @@ pub enum LettersToSegmentBits {
     D = 0b01011110,
     E = 0b01111001,
     F = 0b01110001,
-    MINUS = SegmentBits::SegG as u8
+    MINUS = SegmentBits::SegG as u8,
 }
 
 /// Mode of GPIO Pins.
@@ -82,7 +87,7 @@ pub enum GpioPinMode {
     /// Input-Pin.
     INPUT,
     /// Output-Pin.
-    OUTPUT
+    OUTPUT,
 }
 
 /// The value of a GPIO pin.
@@ -91,7 +96,7 @@ pub enum GpioPinValue {
     /// Low.
     LOW,
     /// High.
-    HIGH
+    HIGH,
 }
 
 impl From<u8> for GpioPinValue {
@@ -143,7 +148,7 @@ pub enum Brightness {
     L5 = 0b101,
     L6 = 0b110,
     /// Highest brightness.
-    L7 = 0b111
+    L7 = 0b111,
 }
 
 /// Whether the display is on or off.
@@ -176,7 +181,7 @@ pub enum ISA {
     // bits 0 - 2 tell the brightness.
     // bit 3 is display on/off
     /// Command that sets the display off.
-    DisplayControlOff  = 0b1000_0000,
+    DisplayControlOff = 0b1000_0000,
     /// Command that sets the display on with lowest brightness.
     DisplayControlOnL0 = 0b1000_1000,
     DisplayControlOnL1 = 0b1000_1001,
@@ -220,7 +225,7 @@ impl TM1637Adapter {
             pin_dio_write_fn,
             pin_dio_read_fn,
             bit_delay_fn,
-            brightness: DisplayState::ON as u8 | Brightness::L7 as u8
+            brightness: DisplayState::ON as u8 | Brightness::L7 as u8,
         }
     }
 
@@ -243,10 +248,21 @@ impl TM1637Adapter {
         self.brightness = display_on | brightness as u8;
     }
 
-    /// This uses auto increment address mode (see data sheet) internally.
-    /// This means that there are 4 bytes that describe the whole data state.
-    /// So if you only wan't to change on you have to write the full array again.
-    pub fn write_segments_raw(&self, segments: [u8; 4]) {
+    /// Writes all raw segments data beginning at the position into the display registers.
+    /// It uses auto increment internally to write into all further registers.
+    /// This functions does an internal check so that not more than 6 registers can be
+    /// addressed/written.
+    /// * `segments` Raw data describing the bits of the 7 segment display.
+    /// * `n` Length of segments array.
+    /// * `pos` The start position of the display register. While bytes are
+    ///         written, address is adjusted internally via auto increment.
+    ///         Usually this is 0, if you want to write data to all 7 segment
+    ///         displays.
+    pub fn write_segments_raw(&self, segments: &[u8], n: u8, pos: u8) {
+        let pos = pos % DISPLAY_REGISTERS as u8;
+        // -1 because n is the length but array index starts at 0
+        let n = (n - 1) % DISPLAY_REGISTERS as u8;
+
         // Command 1
         // for more information about this flow: see data sheet / specification of TM1637
         // or AZDelivery's 7 segment display
@@ -256,74 +272,40 @@ impl TM1637Adapter {
 
         // Write COMM2
         self.start();
-        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8);
+        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | pos);
 
-        // Write the 4 data bytes
-        for i in 0..4 {
-            self.write_byte_and_wait_ack(segments[i]);
+        // Write the remaining data bytes
+        // TM1637 does auto increment internally
+        for i in pos..n {
+            self.write_byte_and_wait_ack(segments[i as usize]);
         }
         self.stop();
 
-        // Write COMM3 + brightness
-        self.write_display_control_command();
+        // we do this everytime because it will be a common flow that people write something
+        // and expect the display to be on
+        self.write_display_state();
     }
+
 
     /// This uses fixed address mode (see data sheet) internally to write data to
     /// a specific position of the display.
     /// Position is 0, 1, 2, or 3.
     pub fn write_segment_raw(&self, segments: u8, position: u8) {
-        let position = position % 4;
-
-        // Command 1
-        // for more information about this flow: see data sheet / specification of TM1637
-        // or AZDelivery's 7 segment display
-        self.start();
-        self.write_byte_and_wait_ack(ISA::DataCommandWriteToDisplay as u8);
-        self.stop();
-
-        // Write COMM2
-        self.start();
-        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | position);
-
-        // Write the data byte
-        self.write_byte_and_wait_ack(segments);
-        self.stop();
-
-        // Write COMM3 + brightness
-        self.write_display_control_command();
-    }
-
-    pub fn set_dot(&self) {
-        // Command 1
-        // for more information about this flow: see data sheet / specification of TM1637
-        // or AZDelivery's 7 segment display
-        self.start();
-        self.write_byte_and_wait_ack(ISA::DataCommandWriteToDisplay as u8);
-        self.stop();
-
-        // Write COMM2
-        self.start();
-        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | 0x0111);
-
-        // Write the data byte
-        self.write_byte_and_wait_ack(0b1000000);
-        self.stop();
-
-        // Write COMM3 + brightness
-        self.write_display_control_command();
-    }
-
-    /// Clears the display.
-    pub fn clear(&self) {
-       self.write_segments_raw([0, 0, 0, 0]);
+        self.write_segments_raw(&[segments], 1, position)
     }
 
     /// Send command that sets the display state on the micro controller.
-    fn write_display_control_command(&self) {
+    pub fn write_display_state(&self) {
         self.start();
         // bits 0-2 brightness; bit 3 is on/off
         self.write_byte_and_wait_ack(ISA::DisplayControlOff as u8 | self.brightness);
         self.stop();
+    }
+
+    /// Clears the display.
+    pub fn clear(&self) {
+        // begin at position 0 and write 0 into display registers 0 to 5
+        self.write_segments_raw(&[0, 0, 0, 0, 0, 0], 6, 0);
     }
 
     /// Writes a byte bit by bit and waits for the acknowledge.
