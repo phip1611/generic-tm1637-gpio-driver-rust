@@ -33,7 +33,7 @@ use alloc::boxed::Box;
 /// According to the data sheet the TM1637 can address 6 display registers.
 /// Note that not all devices using it do as well. For example the 4-digit
 /// 7-segment display from AzDelivery only uses 4.
-pub const DISPLAY_REGISTERS: usize = 6;
+pub const DISPLAY_REGISTERS_COUNT: usize = 6;
 
 /// Shows which segment has which bit.
 #[repr(u8)]
@@ -258,10 +258,24 @@ impl TM1637Adapter {
     ///         written, address is adjusted internally via auto increment.
     ///         Usually this is 0, if you want to write data to all 7 segment
     ///         displays.
-    pub fn write_segments_raw(&self, segments: &[u8], n: u8, pos: u8) {
-        let pos = pos % DISPLAY_REGISTERS as u8;
-        // -1 because n is the length but array index starts at 0
-        let n = (n - 1) % DISPLAY_REGISTERS as u8;
+    pub fn write_segments_raw(&self, segments: &[u8], mut n: u8, pos: u8) {
+        // beeing a little bit more failure tolerant
+        if n == 0 { return; } // nothing to do
+        let pos = pos % DISPLAY_REGISTERS_COUNT as u8; // only valid positions/registers
+
+        // valid values are
+        //   n = 1, pos = {0, 1, 2, 3, 4, 5}
+        //   n = 2, pos = {0, 1, 2, 3, 4}
+        //   n = 3, pos = {0, 1, 2, 3}
+        //   n = 4, pos = {0, 1, 2}
+        //   n = 5, pos = {0, 1}
+        //   n = 6, pos = {0}
+        // => n + pos must be <= DISPLAY_REGISTERS_COUNT
+
+        if n + pos > DISPLAY_REGISTERS_COUNT as u8 {
+            // only write as much data as registers are available
+            n = DISPLAY_REGISTERS_COUNT as u8 - pos;
+        }
 
         // Command 1
         // for more information about this flow: see data sheet / specification of TM1637
@@ -276,7 +290,7 @@ impl TM1637Adapter {
 
         // Write the remaining data bytes
         // TM1637 does auto increment internally
-        for i in pos..n {
+        for i in 0..n {
             self.write_byte_and_wait_ack(segments[i as usize]);
         }
         self.stop();

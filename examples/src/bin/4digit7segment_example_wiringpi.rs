@@ -29,17 +29,20 @@ fn main() {
     tm1637display.write_segment_raw(LettersToSegmentBits::MINUS as u8, 2);
     sleep(Duration::from_secs(2));
 
-    tm1637display.set_brightness(Brightness::L0);
-    tm1637display.write_display_state();
-    sleep(Duration::from_millis(500));
-    tm1637display.set_brightness(Brightness::L2);
-    tm1637display.write_display_state();
-    sleep(Duration::from_millis(500));
-    tm1637display.set_brightness(Brightness::L4);
-    tm1637display.write_display_state();
-    sleep(Duration::from_millis(500));
-    tm1637display.set_brightness(Brightness::L7);
-    tm1637display.write_display_state();
+    for _ in 0..10 {
+        tm1637display.set_brightness(Brightness::L0);
+        tm1637display.write_display_state();
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L2);
+        tm1637display.write_display_state();
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L4);
+        tm1637display.write_display_state();
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L7);
+        tm1637display.write_display_state();
+        sleep(Duration::from_millis(200));
+    }
     sleep(Duration::from_secs(1));
 
     tm1637display.write_segment_raw(LettersToSegmentBits::A as u8, 0);
