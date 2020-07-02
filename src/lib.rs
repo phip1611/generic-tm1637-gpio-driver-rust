@@ -64,16 +64,17 @@ const DIGITS_TO_BITS: [u8; 10] = [
 ];
 
 // Maps the meaning of a character to its bit representation on the 7 segment display.
-// TODO A-Z and "-"
-/*#[repr(u8)]
-pub enum LettersToBits {
+// TODO test this and add more letters
+#[repr(u8)]
+pub enum LettersToSegmentBits {
     A = 0b01110111,
     B = 0b01111100,
     C = 0b00111001,
     D = 0b01011110,
     E = 0b01111001,
     F = 0b01110001,
-}*/
+    MINUS = SegmentBits::SegG as u8
+}
 
 /// Mode of GPIO Pins.
 #[repr(u8)]
@@ -337,6 +338,7 @@ impl TM1637Adapter {
 
     /// This tells the TM1637 that data input starts.
     /// This information stands in the official data sheet.
+    #[inline]
     fn start(&self) {
         (self.pin_dio_write_fn)(GpioPinValue::HIGH);
         (self.pin_clock_write_fn)(GpioPinValue::HIGH);
@@ -350,6 +352,7 @@ impl TM1637Adapter {
 
     /// This tells the TM1637 that data input stops.
     /// This information stands in the official data sheet.
+    #[inline]
     fn stop(&self) {
         (self.pin_dio_write_fn)(GpioPinValue::LOW);
         (self.pin_clock_write_fn)(GpioPinValue::HIGH);
@@ -385,6 +388,7 @@ impl TM1637Adapter {
     /// This is necessary so that changed values on the pins (High, Low)
     /// are applied. The best value here depends on your platform.
     /// 100µs on Raspberry Pi with GPIO-Pins seems perfectly fine.
+    #[inline]
     fn bit_delay(&self) {
         (self.bit_delay_fn)()
     }
