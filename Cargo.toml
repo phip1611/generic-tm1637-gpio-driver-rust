@@ -1,8 +1,19 @@
 [package]
-name = "generic-tm1637-gpio-driver"
+name = "tm1637-gpio-driver"
 version = "1.0.0"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
+exclude = [
+    "az-delivery-4-digit-7-segment-tm1637.gif",
+    "examples/"
+]
+keywords = ["gpio", "tm1637"]
+categories = ["embedded", "no-std", "hardware-support" ]
+description = "Zero-dependency generic GPIO driver for the TM1637 micro controller. Doesn't need std-lib and you can choose a GPIO interface/library on your own."
+readme = "README.md"
+homepage = "https://github.com/phip1611/generic-tm1637-gpio-driver-rust"
+repository = "https://github.com/phip1611/generic-tm1637-gpio-driver-rust"
+documentation = "https://docs.rs/tm1637-gpio-driver/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -1,15 +1,25 @@
 #![no_std]
 
-/// Zero dependency generic GPIO driver for TM1637.
-/// With this driver you can e.g. control the 4 digit 7 segment display from AZDelivery.
-/// This is not dependent on a specific GPIO interface.
-/// This library was tested on a Raspberry Pi with its GPIO interface.
-/// This library doesn't support all features of TM1637 (yet).
-/// Feel free to contribute. :)
+// MIT License. See LICENSE file.
+
+// Made by:
+//   Philipp Schuster
+//   phip1611@gmail.com
+
+// Inspired by / Special thanks to:
+// https://github.com/avishorp/TM1637
+
+//! Zero-dependency generic GPIO driver for TM1637.
+//! With this driver you can control for example the 4-digit 7-segment display from AZ-Delivery.
+//! This is not dependent on a specific GPIO interface.
+//! This library was tested on a Raspberry Pi with its GPIO interface.
+//! This library doesn't support all features of TM1637 (yet).
+//! Feel free to contribute. :)
 
 // rust core library; no external crate; needed because no_std
 extern crate alloc;
 
+// use Box: we don't have std::prelude here
 use alloc::boxed::Box;
 
 //       A
@@ -34,7 +44,8 @@ pub enum SegmentBits {
     SegDB = 0b10000000,
 }
 
-/// Array from index to bits on 7 segment display.
+/// Array that maps a digit (0-9) to its bits representation
+/// on the 7 segment display. Get the bits by indexing this array.
 const DIGITS_TO_BITS: [u8; 10] = [
     // 0
     0b00111111,
@@ -117,7 +128,7 @@ pub struct TM1637Adapter {
 
 /// The level of brightness.
 /// The TM1637 "DisplayControl"-command transports the brightness information
-/// in bits 0 to 3.
+/// in bits 0 to 2.
 #[repr(u8)]
 pub enum Brightness {
     // useless assignment because it is default but it shows clearly
@@ -153,9 +164,13 @@ pub enum ISA {
     DataCommandWriteToDisplay = 0b0100_0000, // "write data to display register"-mode
 
     // send this + <recv ack> + send byte 0 + <recv ack> + ... send byte 3
-    /// Starts at display address zero. Each further byte that was send will go
-    /// into the next display address. See the data sheet for more information.
-    AddressCommandDefault = 0b1100_0000,
+    /// Starts at display address zero. Each further byte that is send will go
+    /// into the next display address. The micro controller does an internal auto increment
+    /// of the address. See the data sheet for more information.
+    AddressCommandD0 = 0b1100_0000,
+    AddressCommandD1 = 0b1100_0001,
+    AddressCommandD2 = 0b1100_0010,
+    AddressCommandD3 = 0b1100_0011,
 
     // bits 0 - 2 tell the brightness.
     // bit 3 is display on/off
@@ -210,6 +225,7 @@ impl TM1637Adapter {
 
     /// Sets the display state. The display state is the 3rd bit of the
     /// "display control"-command.
+    /// This setting is not committed until a write operation has been made.
     pub fn set_display_state(&mut self, ds: DisplayState) {
         // keep old state for brightness
         let old_brightness = self.brightness & 0b0000_0111;
@@ -217,14 +233,16 @@ impl TM1637Adapter {
         self.brightness = ds as u8 | old_brightness;
     }
 
-    /// Sets the brightness of the screen.
+    /// Sets the brightness of the screen. The brightness are the lower
+    /// 3 bits of the "display control"-command.
+    /// This setting is not committed until a write operation has been made.
     pub fn set_brightness(&mut self, brightness: Brightness) {
         // look if display is configured as on
         let display_on = self.brightness as u8 & 0b0000_1000;
         self.brightness = display_on | brightness as u8;
     }
 
-    /// This uses fixed address mode (see data sheet) internally.
+    /// This uses auto increment address mode (see data sheet) internally.
     /// This means that there are 4 bytes that describe the whole data state.
     /// So if you only wan't to change on you have to write the full array again.
     pub fn write_segments_raw(&self, segments: [u8; 4]) {
@@ -237,7 +255,7 @@ impl TM1637Adapter {
 
         // Write COMM2
         self.start();
-        self.write_byte_and_wait_ack(ISA::AddressCommandDefault as u8);
+        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8);
 
         // Write the 4 data bytes
         for i in 0..4 {
@@ -252,12 +270,40 @@ impl TM1637Adapter {
         self.stop();
     }
 
+    /// This uses fixed address mode (see data sheet) internally to write data to
+    /// a specific position of the display.
+    /// Position is 0, 1, 2, or 3.
+    pub fn write_segment_raw(&self, segments: u8, position: u8) {
+        let position = position % 4;
+
+        // Command 1
+        // for more information about this flow: see data sheet / specification of TM1637
+        // or AZDelivery's 7 segment display
+        self.start();
+        self.write_byte_and_wait_ack(ISA::DataCommandWriteToDisplay as u8);
+        self.stop();
+
+        // Write COMM2
+        self.start();
+        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | position);
+
+        // Write the data byte
+        self.write_byte_and_wait_ack(segments);
+        self.stop();
+
+        // Write COMM3 + brightness
+        self.start();
+        // bits 0-2 brightness; bit 3 is on/off
+        self.write_byte_and_wait_ack(ISA::DisplayControlOnL0 as u8 + (self.brightness & 0x0f));
+        self.stop();
+    }
+
     /// Clears the display.
     pub fn clear(&self) {
        self.write_segments_raw([0, 0, 0, 0]);
     }
 
-    /// Writes a byte and waits for the acknowledge.
+    /// Writes a byte bit by bit and waits for the acknowledge.
     fn write_byte_and_wait_ack(&self, byte: u8) {
         let mut data = byte;
 
@@ -293,7 +339,6 @@ impl TM1637Adapter {
     /// This information stands in the official data sheet.
     fn start(&self) {
         (self.pin_dio_write_fn)(GpioPinValue::HIGH);
-        // self.bit_delay(); probably not necessary
         (self.pin_clock_write_fn)(GpioPinValue::HIGH);
         self.bit_delay();
         (self.pin_dio_write_fn)(GpioPinValue::LOW);
@@ -307,7 +352,6 @@ impl TM1637Adapter {
     /// This information stands in the official data sheet.
     fn stop(&self) {
         (self.pin_dio_write_fn)(GpioPinValue::LOW);
-        // self.bit_delay(); probably not necessary
         (self.pin_clock_write_fn)(GpioPinValue::HIGH);
         self.bit_delay();
         (self.pin_dio_write_fn)(GpioPinValue::HIGH);
