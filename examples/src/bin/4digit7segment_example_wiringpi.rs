@@ -5,7 +5,7 @@ use std::env;
 use wiringpi::pin::Value::{High, Low};
 use wiringpi::pin::Value;
 use std::rc::Rc;
-use tm1637_gpio_driver::{GpioPinMode, TM1637Adapter, Brightness, GpioPinValue, LettersToSegmentBits};
+use tm1637_gpio_driver::{GpioPinMode, TM1637Adapter, Brightness, GpioPinValue, LettersToSegmentBits, SymbolsToSegmentBits};
 use wiringpi::WiringPi;
 use std::thread::sleep;
 use std::time::Duration;
@@ -25,8 +25,8 @@ fn main() {
 
 
     // set both in the middle to "-"
-    tm1637display.write_segment_raw(LettersToSegmentBits::MINUS as u8, 1);
-    tm1637display.write_segment_raw(LettersToSegmentBits::MINUS as u8, 2);
+    tm1637display.write_segment_raw(SymbolsToSegmentBits::MINUS as u8, 1);
+    tm1637display.write_segment_raw(SymbolsToSegmentBits::MINUS as u8, 2);
     sleep(Duration::from_secs(2));
 
     for _ in 0..10 {
