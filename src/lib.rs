@@ -302,7 +302,7 @@ impl TM1637Adapter {
     fn write_display_control_command(&self) {
         self.start();
         // bits 0-2 brightness; bit 3 is on/off
-        self.write_byte_and_wait_ack(ISA::DisplayControlOnL0 as u8 | self.brightness);
+        self.write_byte_and_wait_ack(ISA::DisplayControlOff as u8 | self.brightness);
         self.stop();
     }
 
