@@ -298,7 +298,7 @@ impl TM1637Adapter {
        self.write_segments_raw([0, 0, 0, 0]);
     }
 
-    /// Command that sets the display state on the micro controller.
+    /// Send command that sets the display state on the micro controller.
     fn write_display_control_command(&self) {
         self.start();
         // bits 0-2 brightness; bit 3 is on/off
