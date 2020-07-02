@@ -73,11 +73,11 @@ const DIGITS_TO_BITS: [u8; 10] = [
 /// Maps a upper case/capital character to its 7-segment bit representation.
 #[repr(u8)]
 pub enum CapitalLettersToSegmentBits {
-    A = SegmentBits::SegA | SegmentBits::SegB | SegmentBits::SegF | SegmentBits::SegG | SegmentBits::SegE | SegmentBits::SegC,
-    C = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegD,
-    E = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegD | SegmentBits::SegG,
-    F = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegG,
-    // and so on :)
+    A = 0x77,
+    C = 0x39,
+    E = 0x79,
+    F = SegmentBits::SegA as u8 | SegmentBits::SegF as u8 | SegmentBits::SegE as u8 | SegmentBits::SegG as u8,
+    // could be also done like this :)
     G = 0x3d,
     H = 0x76,
     I = 0x30,
@@ -111,8 +111,8 @@ pub enum SymbolsToSegmentBits {
     SPACE = 0,
     MINUS = SegmentBits::SegG as u8,
     UNDERSCORE = SegmentBits::SegD as u8,
-    EQUALS = SegmentBits::SegG | SegmentBits::SegD,
-    QUESTION_MARK = SegmentBits::SegA | SegmentBits::SegB | SegmentBits::SegG | SegmentBits::SegE,
+    EQUALS = SegmentBits::SegG as u8 | SegmentBits::SegD as u8,
+    QUESTION_MARK = SegmentBits::SegA as u8 | SegmentBits::SegB  as u8 | SegmentBits::SegG as u8 | SegmentBits::SegE as u8,
     DOT = SegmentBits::SegPoint as u8
 }
 
@@ -392,39 +392,37 @@ impl TM1637Adapter {
     /// Encodes a char for the 7-segment display.
     /// Unknown chars will be a zero byte (space).
     pub fn encode_char(c: char) -> u8 {
-        {
-            if c == 'A' { CapitalLettersToSegmentBits::A }
-            else if c == 'a' { LettersToSegmentBits::A }
-            else if c == 'b' { LettersToSegmentBits::B }
-            else if c == 'C' { CapitalLettersToSegmentBits::C }
-            else if c == 'd' { LettersToSegmentBits::D }
-            else if c == 'E' { CapitalLettersToSegmentBits::E }
-            else if c == 'F' { CapitalLettersToSegmentBits::F }
-            else if c == 'G' { CapitalLettersToSegmentBits::G }
-            else if c == 'H' { CapitalLettersToSegmentBits::H }
-            else if c == 'h' { LettersToSegmentBits::H }
-            else if c == 'I' { CapitalLettersToSegmentBits::I }
-            else if c == 'J' { CapitalLettersToSegmentBits::J }
-            else if c == 'L' { CapitalLettersToSegmentBits::L }
-            else if c == 'n' { LettersToSegmentBits::N }
-            else if c == 'O' { CapitalLettersToSegmentBits::O }
-            else if c == 'o' { LettersToSegmentBits::O }
-            else if c == 'P' { CapitalLettersToSegmentBits::P }
-            else if c == 'q' { LettersToSegmentBits::Q }
-            else if c == 'r' { LettersToSegmentBits::R }
-            else if c == 'S' { CapitalLettersToSegmentBits::S }
-            else if c == 't' { LettersToSegmentBits::T }
-            else if c == 'U' { CapitalLettersToSegmentBits::U }
-            else if c == 'u' { LettersToSegmentBits::U }
-            else if c == 'y' { LettersToSegmentBits::Y }
-            else if c == ' ' { SymbolsToSegmentBits::SPACE }
-            else if c == '?' { SymbolsToSegmentBits::QUESTION_MARK }
-            else if c == '-' { SymbolsToSegmentBits::MINUS }
-            else if c == '_' { SymbolsToSegmentBits::UNDERSCORE }
-            else if c == '=' { SymbolsToSegmentBits::EQUALS }
-            else if c == '.' { SymbolsToSegmentBits::DOT }
-            else { SymbolsToSegmentBits::SPACE }
-        } as u8
+        if c == 'A' { CapitalLettersToSegmentBits::A as u8 }
+        else if c == 'a' { LettersToSegmentBits::A as u8 }
+        else if c == 'b' { LettersToSegmentBits::B as u8 }
+        else if c == 'C' { CapitalLettersToSegmentBits::C as u8 }
+        else if c == 'd' { LettersToSegmentBits::D as u8 }
+        else if c == 'E' { CapitalLettersToSegmentBits::E as u8 }
+        else if c == 'F' { CapitalLettersToSegmentBits::F as u8 }
+        else if c == 'G' { CapitalLettersToSegmentBits::G as u8 }
+        else if c == 'H' { CapitalLettersToSegmentBits::H as u8 }
+        else if c == 'h' { LettersToSegmentBits::H as u8 }
+        else if c == 'I' { CapitalLettersToSegmentBits::I as u8 }
+        else if c == 'J' { CapitalLettersToSegmentBits::J as u8 }
+        else if c == 'L' { CapitalLettersToSegmentBits::L as u8 }
+        else if c == 'n' { LettersToSegmentBits::N as u8 }
+        else if c == 'O' { CapitalLettersToSegmentBits::O as u8 }
+        else if c == 'o' { LettersToSegmentBits::O as u8 }
+        else if c == 'P' { CapitalLettersToSegmentBits::P as u8 }
+        else if c == 'q' { LettersToSegmentBits::Q as u8 }
+        else if c == 'r' { LettersToSegmentBits::R as u8 }
+        else if c == 'S' { CapitalLettersToSegmentBits::S as u8 }
+        else if c == 't' { LettersToSegmentBits::T as u8 }
+        else if c == 'U' { CapitalLettersToSegmentBits::U as u8 }
+        else if c == 'u' { LettersToSegmentBits::U as u8 }
+        else if c == 'y' { LettersToSegmentBits::Y as u8 }
+        else if c == ' ' { SymbolsToSegmentBits::SPACE as u8 }
+        else if c == '?' { SymbolsToSegmentBits::QUESTION_MARK as u8 }
+        else if c == '-' { SymbolsToSegmentBits::MINUS as u8 }
+        else if c == '_' { SymbolsToSegmentBits::UNDERSCORE as u8 }
+        else if c == '=' { SymbolsToSegmentBits::EQUALS as u8 }
+        else if c == '.' { SymbolsToSegmentBits::DOT as u8 }
+        else { SymbolsToSegmentBits::SPACE as u8 }
     }
 
     /// Encodes a string for the 7-segment display.
