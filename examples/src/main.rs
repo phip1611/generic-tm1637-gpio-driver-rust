@@ -53,7 +53,7 @@ fn setup() -> TM1637Adapter {
     let pin_clock_write_fn = pin_write_fn_factory(clk_pin, gpio.clone());
     let pin_dio_mode_fn = pin_mode_fn_factory(clk_pin, gpio.clone());
     let pin_dio_write_fn = pin_write_fn_factory(dio_pin, gpio.clone());
-    let pin_dio_read_fn: Box<dyn Fn() -> u8> = pin_read_fn_factory(dio_pin, gpio.clone());
+    let pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue> = pin_read_fn_factory(dio_pin, gpio.clone());
     // set up delay-fn: sleep() is not available in lib because it is zero dependency
     let bit_delay_fn: Box<dyn Fn() -> ()> = Box::from(|| {
         sleep(Duration::from_micros(10));
