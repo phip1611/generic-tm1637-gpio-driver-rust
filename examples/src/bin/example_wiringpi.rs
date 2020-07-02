@@ -28,6 +28,10 @@ fn main() {
     // set both in the middle to "-"
     tm1637display.write_segment_raw(LettersToSegmentBits::MINUS as u8, 1);
     tm1637display.write_segment_raw(LettersToSegmentBits::MINUS as u8, 2);
+
+    println!("Setting dot!");
+
+    tm1637display.set_dot();
 }
 
 fn pin_mode_fn_factory(gpio_pin_num: u16, gpio: Rc<WiringPi<wiringpi::pin::Gpio>>) -> Box<dyn Fn(GpioPinMode)> {

@@ -293,6 +293,26 @@ impl TM1637Adapter {
         self.write_display_control_command();
     }
 
+    pub fn set_dot(&self) {
+        // Command 1
+        // for more information about this flow: see data sheet / specification of TM1637
+        // or AZDelivery's 7 segment display
+        self.start();
+        self.write_byte_and_wait_ack(ISA::DataCommandWriteToDisplay as u8);
+        self.stop();
+
+        // Write COMM2
+        self.start();
+        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | 0x0111);
+
+        // Write the data byte
+        self.write_byte_and_wait_ack(0b1000000);
+        self.stop();
+
+        // Write COMM3 + brightness
+        self.write_display_control_command();
+    }
+
     /// Clears the display.
     pub fn clear(&self) {
        self.write_segments_raw([0, 0, 0, 0]);
