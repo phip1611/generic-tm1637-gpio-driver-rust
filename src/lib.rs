@@ -1,3 +1,5 @@
+#![no_std]
+
 /// Zero dependency generic GPIO driver for TM1637.
 /// With this driver you can e.g. control the 4 digit 7 segment display from AZDelivery.
 /// This is not dependent on a specific GPIO interface.
@@ -5,9 +7,10 @@
 /// This library doesn't support all features of TM1637 (yet).
 /// Feel free to contribute. :)
 
+// rust core library; no external crate; needed because no_std
+extern crate alloc;
 
-use std::thread::sleep;
-use std::time::Duration;
+use alloc::boxed::Box;
 
 //       A
 //      ---
@@ -101,8 +104,11 @@ pub struct TM1637Adapter {
     pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
     /// Function that reads from the data in and out pin.
     pin_dio_read_fn: Box<dyn Fn() -> u8>,
-    /// Delay in µs how long to sleep when a change to the pins has been made.
-    bit_delay_us: u64,
+    /// Delay function after data bits and clock bits have been set. This is necessary
+    /// because the changed bits must actually arrive on the hardware. Tests showed that
+    /// at least 100µs is safe on Raspberry Pi with it's GPIO interface. Please be aware that
+    /// high frequencies (clock) can become really fast really hard if cables get longer!
+    bit_delay_fn: Box<dyn Fn() -> ()>,
     /// Representation of the display state in bits for the TM1637.
     /// Bits 7-4 are zero. Later the "display control"-command prefix will be there.
     /// Bits 3-0 are for display on/off and brightness.
@@ -184,7 +190,7 @@ impl TM1637Adapter {
                pin_dio_mode_fn: Box<dyn Fn(GpioPinMode)>,
                pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_read_fn: Box<dyn Fn() -> u8>,
-               bit_delay_us: u64) -> TM1637Adapter {
+               bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {
 
         // assume both are already output pins - this is the contract that needs to be fulfilled!
         (pin_clock_mode_fn)(GpioPinMode::OUTPUT);
@@ -197,7 +203,7 @@ impl TM1637Adapter {
             pin_dio_mode_fn,
             pin_dio_write_fn,
             pin_dio_read_fn,
-            bit_delay_us,
+            bit_delay_fn,
             brightness: DisplayState::ON as u8 | Brightness::L7 as u8
         }
     }
@@ -321,7 +327,8 @@ impl TM1637Adapter {
         let ack: u8 = (self.pin_dio_read_fn)();
         if ack != 0 {
             // ACK should be one clock with zero on data lane
-            eprintln!("ack is not 0! Probably not a problem, tho.")
+            // not possible with no_std; TODO provide debug function
+            // eprintln!("ack is not 0! Probably not a problem, tho.")
         }
 
         (self.pin_dio_mode_fn)(GpioPinMode::OUTPUT);
@@ -335,6 +342,6 @@ impl TM1637Adapter {
     /// are applied. The best value here depends on your platform.
     /// 100µs on Raspberry Pi with GPIO-Pins seems perfectly fine.
     fn bit_delay(&self) {
-        sleep(Duration::from_micros(self.bit_delay_us))
+        (self.bit_delay_fn)()
     }
 }
