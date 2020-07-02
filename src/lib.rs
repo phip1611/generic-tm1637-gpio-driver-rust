@@ -19,10 +19,13 @@
 // rust core library; no external crate; needed because no_std
 extern crate alloc;
 
+// Import our enums/arrays for the symbol mappings to the 7 segment display
+pub mod mappings;
+
 // use Box: we don't have std::prelude here
 use alloc::boxed::Box;
-use crate::SegmentBits::SegA;
 use alloc::vec::Vec;
+use crate::mappings::{NumCharBits, UpCharBits, SpecialCharBits, LoCharBits};
 
 //       A
 //      ---
@@ -37,84 +40,6 @@ use alloc::vec::Vec;
 /// 7-segment display from AzDelivery only uses 4.
 pub const DISPLAY_REGISTERS_COUNT: usize = 6;
 
-/// Shows which segment has which bit.
-#[repr(u8)]
-pub enum SegmentBits {
-    SegA = 0b00000001,
-    SegB = 0b00000010,
-    SegC = 0b00000100,
-    SegD = 0b00001000,
-    SegE = 0b00010000,
-    SegF = 0b00100000,
-    SegG = 0b01000000,
-    // double point on AzDelivery 4-digit 7 segment display.
-    SegPoint = 0b10000000,
-}
-
-/// Array that maps a digit (0-9) to its bits representation
-/// on the 7 segment display. Get the bits by indexing this array.
-const DIGITS_TO_BITS: [u8; 10] = [
-    // 0
-    0b00111111,
-    // 1
-    0b00000110,
-    // ...
-    0b01011011,
-    0b01001111,
-    0b01100110,
-    0b01101101,
-    0b01111101,
-    0b00000111,
-    0b01111111,
-    // 9
-    0b01101111,
-];
-
-/// Maps a upper case/capital character to its 7-segment bit representation.
-#[repr(u8)]
-pub enum CapitalLettersToSegmentBits {
-    A = 0x77,
-    C = 0x39,
-    E = 0x79,
-    F = SegmentBits::SegA as u8 | SegmentBits::SegF as u8 | SegmentBits::SegE as u8 | SegmentBits::SegG as u8,
-    // could be also done like this :)
-    G = 0x3d,
-    H = 0x76,
-    I = 0x30,
-    J = 0x1E,
-    L = 0x38,
-    O = 0x3F,
-    P = 0x73,
-    S = 0x6D,
-    U = 0x3E
-}
-
-/// Maps a lower case character to its 7-segment bit representation.
-#[repr(u8)]
-pub enum LettersToSegmentBits {
-    A = 0x5F,
-    B = 0x7C,
-    C = 0x58,
-    D = 0x5E,
-    H = 0x74,
-    N = 0x54,
-    O = 0x5c,
-    Q = 0x67,
-    R = 0x50,
-    T = 0x78,
-    U = 0x1C,
-    Y = 0x6E
-}
-
-#[repr(u8)]
-pub enum SymbolsToSegmentBits {
-    SPACE = 0,
-    MINUS = SegmentBits::SegG as u8,
-    UNDERSCORE = SegmentBits::SegD as u8,
-    EQUALS = SegmentBits::SegG as u8 | SegmentBits::SegD as u8,
-    QUESTION_MARK = SegmentBits::SegA as u8 | SegmentBits::SegB  as u8 | SegmentBits::SegG as u8 | SegmentBits::SegE as u8,
-    DOT = SegmentBits::SegPoint as u8
-}
 
 /// Mode of GPIO Pins.
 #[repr(u8)]
@@ -325,6 +250,9 @@ impl TM1637Adapter {
 
         // Write the remaining data bytes
         // TM1637 does auto increment internally
+
+        //println!("n={}, pos={}, data={:#?}", n, pos, segments);
+
         for i in 0..n {
             self.write_byte_and_wait_ack(segments[i as usize]);
         }
@@ -386,46 +314,96 @@ impl TM1637Adapter {
     /// Encodes a digit from 0 to 9 to it's bit representation on the display.
     pub fn encode_digit(digit: u8) -> u8 {
         let digit = digit % 10;
-        DIGITS_TO_BITS[digit as usize]
+        if digit == 0 { NumCharBits::Zero as u8 }
+        else if digit == 1 { NumCharBits::One as u8 }
+        else if digit == 2 { NumCharBits::Two as u8 }
+        else if digit == 3 { NumCharBits::Three as u8 }
+        else if digit == 4 { NumCharBits::Four as u8 }
+        else if digit == 5 { NumCharBits::Five as u8 }
+        else if digit == 6 { NumCharBits::Six as u8 }
+        else if digit == 7 { NumCharBits::Seven as u8 }
+        else if digit == 8 { NumCharBits::Eight as u8 }
+        // else if digit == 9 { NumCharBits::Nine as u8 }
+        else { NumCharBits::Nine as u8 }
     }
 
-    /// Encodes a char for the 7-segment display.
-    /// Unknown chars will be a zero byte (space).
+    /// Encodes a char for the 7-segment display. Unknown chars will be a zero byte (space).
+    /// Uses `mappings::UpCharBits` and `mappings::LoCharBits` for the chars. Since there is
+    /// no representation for every char in each case (lower, upper) there will be an replacement
+    /// for lowercase charts by their uppercase counterpart and vice versa.
     pub fn encode_char(c: char) -> u8 {
-        if c == 'A' { CapitalLettersToSegmentBits::A as u8 }
-        else if c == 'a' { LettersToSegmentBits::A as u8 }
-        else if c == 'b' { LettersToSegmentBits::B as u8 }
-        else if c == 'C' { CapitalLettersToSegmentBits::C as u8 }
-        else if c == 'd' { LettersToSegmentBits::D as u8 }
-        else if c == 'E' { CapitalLettersToSegmentBits::E as u8 }
-        else if c == 'F' { CapitalLettersToSegmentBits::F as u8 }
-        else if c == 'G' { CapitalLettersToSegmentBits::G as u8 }
-        else if c == 'H' { CapitalLettersToSegmentBits::H as u8 }
-        else if c == 'h' { LettersToSegmentBits::H as u8 }
-        else if c == 'I' { CapitalLettersToSegmentBits::I as u8 }
-        else if c == 'J' { CapitalLettersToSegmentBits::J as u8 }
-        else if c == 'L' { CapitalLettersToSegmentBits::L as u8 }
-        else if c == 'n' { LettersToSegmentBits::N as u8 }
-        else if c == 'O' { CapitalLettersToSegmentBits::O as u8 }
-        else if c == 'o' { LettersToSegmentBits::O as u8 }
-        else if c == 'P' { CapitalLettersToSegmentBits::P as u8 }
-        else if c == 'q' { LettersToSegmentBits::Q as u8 }
-        else if c == 'r' { LettersToSegmentBits::R as u8 }
-        else if c == 'S' { CapitalLettersToSegmentBits::S as u8 }
-        else if c == 't' { LettersToSegmentBits::T as u8 }
-        else if c == 'U' { CapitalLettersToSegmentBits::U as u8 }
-        else if c == 'u' { LettersToSegmentBits::U as u8 }
-        else if c == 'y' { LettersToSegmentBits::Y as u8 }
-        else if c == ' ' { SymbolsToSegmentBits::SPACE as u8 }
-        else if c == '?' { SymbolsToSegmentBits::QUESTION_MARK as u8 }
-        else if c == '-' { SymbolsToSegmentBits::MINUS as u8 }
-        else if c == '_' { SymbolsToSegmentBits::UNDERSCORE as u8 }
-        else if c == '=' { SymbolsToSegmentBits::EQUALS as u8 }
-        else if c == '.' { SymbolsToSegmentBits::DOT as u8 }
-        else { SymbolsToSegmentBits::SPACE as u8 }
+        // nums
+        if c == '0' { NumCharBits::Zero as u8 }
+        else if c == '1' { NumCharBits::One as u8 }
+        else if c == '2' { NumCharBits::Two as u8 }
+        else if c == '3' { NumCharBits::Three as u8 }
+        else if c == '4' { NumCharBits::Four as u8 }
+        else if c == '5' { NumCharBits::Five as u8 }
+        else if c == '6' { NumCharBits::Six as u8 }
+        else if c == '7' { NumCharBits::Seven as u8 }
+        else if c == '8' { NumCharBits::Eight as u8 }
+        else if c == '9' { NumCharBits::Nine as u8 }
+
+        // latin chars
+        // we map as accurate as possible,
+        // e.g.: a => lowercase a, A => uppercase A
+        //
+        // but in cases where we only have on mapping available
+        // like: b => lowercase b, B => undefined
+        // we map B => lowercase b
+        else if c == 'A' { UpCharBits::UpA as u8 }
+        else if c == 'a' { LoCharBits::LoA as u8 }
+        else if c == 'B' { LoCharBits::LoB as u8 }
+        else if c == 'b' { LoCharBits::LoB as u8 }
+        else if c == 'C' { UpCharBits::UpC as u8 }
+        else if c == 'c' { UpCharBits::UpC as u8 }
+        else if c == 'D' { LoCharBits::LoD as u8 }
+        else if c == 'd' { LoCharBits::LoD as u8 }
+        else if c == 'E' { UpCharBits::UpE as u8 }
+        else if c == 'e' { UpCharBits::UpE as u8 }
+        else if c == 'F' { UpCharBits::UpF as u8 }
+        else if c == 'f' { UpCharBits::UpF as u8 }
+        else if c == 'G' { UpCharBits::UpG as u8 }
+        else if c == 'g' { UpCharBits::UpG as u8 }
+        else if c == 'H' { UpCharBits::UpH as u8 }
+        else if c == 'h' { LoCharBits::LoH as u8 }
+        else if c == 'I' { UpCharBits::UpI as u8 }
+        else if c == 'i' { UpCharBits::UpI as u8 }
+        else if c == 'J' { UpCharBits::UpJ as u8 }
+        else if c == 'j' { UpCharBits::UpJ as u8 }
+        else if c == 'L' { UpCharBits::UpL as u8 }
+        else if c == 'l' { UpCharBits::UpL as u8 }
+        else if c == 'N' { LoCharBits::LoN as u8 }
+        else if c == 'n' { LoCharBits::LoN as u8 }
+        else if c == 'O' { UpCharBits::UpO as u8 }
+        else if c == 'o' { LoCharBits::LoO as u8 }
+        else if c == 'P' { UpCharBits::UpP as u8 }
+        else if c == 'p' { UpCharBits::UpP as u8 }
+        else if c == 'Q' { LoCharBits::LoQ as u8 }
+        else if c == 'q' { LoCharBits::LoQ as u8 }
+        else if c == 'R' { LoCharBits::LoR as u8 }
+        else if c == 'r' { LoCharBits::LoR as u8 }
+        else if c == 'S' { UpCharBits::UpS as u8 }
+        else if c == 's' { UpCharBits::UpS as u8 }
+        else if c == 'T' { LoCharBits::LoT as u8 }
+        else if c == 't' { LoCharBits::LoT as u8 }
+        else if c == 'U' { UpCharBits::UpU as u8 }
+        else if c == 'u' { LoCharBits::LoU as u8 }
+        else if c == 'Y' { LoCharBits::LoY as u8 }
+        else if c == 'y' { LoCharBits::LoY as u8 }
+
+        // special chars
+        else if c == ' ' { SpecialCharBits::Space as u8 }
+        else if c == '?' { SpecialCharBits::QuestionMark as u8 }
+        else if c == '-' { SpecialCharBits::Minus as u8 }
+        else if c == '_' { SpecialCharBits::Underscore as u8 }
+        else if c == '=' { SpecialCharBits::Equals as u8 }
+        else if c == '.' { SpecialCharBits::Dot as u8 }
+        else { SpecialCharBits::Space as u8 }
     }
 
-    /// Encodes a string for the 7-segment display.
+    /// Encodes a string for the 7-segment display. This uses
+    /// `encode_char` for each character.
     pub fn encode_string(str: &str) -> Vec<u8> {
         str.chars().into_iter()
             .map(|c| TM1637Adapter::encode_char(c))

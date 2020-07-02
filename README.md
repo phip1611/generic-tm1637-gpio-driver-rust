@@ -21,8 +21,6 @@ After some time I understood how it works by looking at the [data sheet](https:/
 properly address the points in the middle of the display you see in the gif.
 
 
-
-
 ## How can I use it?
 My driver/library is not dependent on a specific GPIO interface.
 You can use [crates.io: wiringpi](https://crates.io/crates/wiringpi) or [crates.io: gpio](https://crates.io/crates/gpio)
