@@ -373,8 +373,8 @@ impl TM1637Adapter {
         // prepare read
         (self.pin_dio_mode_fn)(GpioPinMode::INPUT);
         self.bit_delay();
-        let ack: u8 = (self.pin_dio_read_fn)();
-        if ack != 0 {
+        let ack: GpioPinValue = (self.pin_dio_read_fn)();
+        if ack as u8 != 0 {
             // ACK should be one clock with zero on data lane
             // not possible with no_std; TODO provide debug function
             // eprintln!("ack is not 0! Probably not a problem, tho.")
