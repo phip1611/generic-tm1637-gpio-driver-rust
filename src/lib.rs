@@ -115,7 +115,7 @@ pub struct TM1637Adapter {
     /// Function that writes the value on the GPIO pin that acts as data in and out.
     pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
     /// Function that reads from the data in and out pin.
-    pin_dio_read_fn: Box<dyn Fn() -> u8>,
+    pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,
     /// Delay function after data bits and clock bits have been set. This is necessary
     /// because the changed bits must actually arrive on the hardware. Tests showed that
     /// at least 100µs is safe on Raspberry Pi with it's GPIO interface. Please be aware that
@@ -205,7 +205,7 @@ impl TM1637Adapter {
                pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_mode_fn: Box<dyn Fn(GpioPinMode)>,
                pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
-               pin_dio_read_fn: Box<dyn Fn() -> u8>,
+               pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,
                bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {
 
         // assume both are already output pins - this is the contract that needs to be fulfilled!
