@@ -265,10 +265,7 @@ impl TM1637Adapter {
         self.stop();
 
         // Write COMM3 + brightness
-        self.start();
-        // bits 0-2 brightness; bit 3 is on/off
-        self.write_byte_and_wait_ack(ISA::DisplayControlOnL0 as u8 + (self.brightness & 0x0f));
-        self.stop();
+        self.write_display_control_command();
     }
 
     /// This uses fixed address mode (see data sheet) internally to write data to
@@ -293,15 +290,20 @@ impl TM1637Adapter {
         self.stop();
 
         // Write COMM3 + brightness
-        self.start();
-        // bits 0-2 brightness; bit 3 is on/off
-        self.write_byte_and_wait_ack(ISA::DisplayControlOnL0 as u8 + (self.brightness & 0x0f));
-        self.stop();
+        self.write_display_control_command();
     }
 
     /// Clears the display.
     pub fn clear(&self) {
        self.write_segments_raw([0, 0, 0, 0]);
+    }
+
+    /// Command that sets the display state on the micro controller.
+    fn write_display_control_command(&self) {
+        self.start();
+        // bits 0-2 brightness; bit 3 is on/off
+        self.write_byte_and_wait_ack(ISA::DisplayControlOnL0 as u8 | self.brightness);
+        self.stop();
     }
 
     /// Writes a byte bit by bit and waits for the acknowledge.
