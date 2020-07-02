@@ -21,6 +21,8 @@ extern crate alloc;
 
 // use Box: we don't have std::prelude here
 use alloc::boxed::Box;
+use crate::SegmentBits::SegA;
+use alloc::vec::Vec;
 
 //       A
 //      ---
@@ -45,8 +47,8 @@ pub enum SegmentBits {
     SegE = 0b00010000,
     SegF = 0b00100000,
     SegG = 0b01000000,
-    // double point
-    SegDB = 0b10000000,
+    // double point on AzDelivery 4-digit 7 segment display.
+    SegPoint = 0b10000000,
 }
 
 /// Array that maps a digit (0-9) to its bits representation
@@ -68,17 +70,50 @@ const DIGITS_TO_BITS: [u8; 10] = [
     0b01101111,
 ];
 
-// Maps the meaning of a character to its bit representation on the 7 segment display.
-// TODO test this and add more letters
+/// Maps a upper case/capital character to its 7-segment bit representation.
+#[repr(u8)]
+pub enum CapitalLettersToSegmentBits {
+    A = SegmentBits::SegA | SegmentBits::SegB | SegmentBits::SegF | SegmentBits::SegG | SegmentBits::SegE | SegmentBits::SegC,
+    C = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegD,
+    E = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegD | SegmentBits::SegG,
+    F = SegmentBits::SegA | SegmentBits::SegF | SegmentBits::SegE | SegmentBits::SegG,
+    // and so on :)
+    G = 0x3d,
+    H = 0x76,
+    I = 0x30,
+    J = 0x1E,
+    L = 0x38,
+    O = 0x3F,
+    P = 0x73,
+    S = 0x6D,
+    U = 0x3E
+}
+
+/// Maps a lower case character to its 7-segment bit representation.
 #[repr(u8)]
 pub enum LettersToSegmentBits {
-    A = 0b01110111,
-    B = 0b01111100,
-    C = 0b00111001,
-    D = 0b01011110,
-    E = 0b01111001,
-    F = 0b01110001,
+    A = 0x5F,
+    B = 0x7C,
+    C = 0x58,
+    D = 0x5E,
+    H = 0x74,
+    N = 0x54,
+    O = 0x5c,
+    Q = 0x67,
+    R = 0x50,
+    T = 0x78,
+    U = 0x1C,
+    Y = 0x6E
+}
+
+#[repr(u8)]
+pub enum SymbolsToSegmentBits {
+    SPACE = 0,
     MINUS = SegmentBits::SegG as u8,
+    UNDERSCORE = SegmentBits::SegD as u8,
+    EQUALS = SegmentBits::SegG | SegmentBits::SegD,
+    QUESTION_MARK = SegmentBits::SegA | SegmentBits::SegB | SegmentBits::SegG | SegmentBits::SegE,
+    DOT = SegmentBits::SegPoint as u8
 }
 
 /// Mode of GPIO Pins.
@@ -354,6 +389,51 @@ impl TM1637Adapter {
         DIGITS_TO_BITS[digit as usize]
     }
 
+    /// Encodes a char for the 7-segment display.
+    /// Unknown chars will be a zero byte (space).
+    pub fn encode_char(c: char) -> u8 {
+        {
+            if c == 'A' { CapitalLettersToSegmentBits::A }
+            else if c == 'a' { LettersToSegmentBits::A }
+            else if c == 'b' { LettersToSegmentBits::B }
+            else if c == 'C' { CapitalLettersToSegmentBits::C }
+            else if c == 'd' { LettersToSegmentBits::D }
+            else if c == 'E' { CapitalLettersToSegmentBits::E }
+            else if c == 'F' { CapitalLettersToSegmentBits::F }
+            else if c == 'G' { CapitalLettersToSegmentBits::G }
+            else if c == 'H' { CapitalLettersToSegmentBits::H }
+            else if c == 'h' { LettersToSegmentBits::H }
+            else if c == 'I' { CapitalLettersToSegmentBits::I }
+            else if c == 'J' { CapitalLettersToSegmentBits::J }
+            else if c == 'L' { CapitalLettersToSegmentBits::L }
+            else if c == 'n' { LettersToSegmentBits::N }
+            else if c == 'O' { CapitalLettersToSegmentBits::O }
+            else if c == 'o' { LettersToSegmentBits::O }
+            else if c == 'P' { CapitalLettersToSegmentBits::P }
+            else if c == 'q' { LettersToSegmentBits::Q }
+            else if c == 'r' { LettersToSegmentBits::R }
+            else if c == 'S' { CapitalLettersToSegmentBits::S }
+            else if c == 't' { LettersToSegmentBits::T }
+            else if c == 'U' { CapitalLettersToSegmentBits::U }
+            else if c == 'u' { LettersToSegmentBits::U }
+            else if c == 'y' { LettersToSegmentBits::Y }
+            else if c == ' ' { SymbolsToSegmentBits::SPACE }
+            else if c == '?' { SymbolsToSegmentBits::QUESTION_MARK }
+            else if c == '-' { SymbolsToSegmentBits::MINUS }
+            else if c == '_' { SymbolsToSegmentBits::UNDERSCORE }
+            else if c == '=' { SymbolsToSegmentBits::EQUALS }
+            else if c == '.' { SymbolsToSegmentBits::DOT }
+            else { SymbolsToSegmentBits::SPACE }
+        } as u8
+    }
+
+    /// Encodes a string for the 7-segment display.
+    pub fn encode_string(str: &str) -> Vec<u8> {
+        str.chars().into_iter()
+            .map(|c| TM1637Adapter::encode_char(c))
+            .collect()
+    }
+
     /// This tells the TM1637 that data input starts.
     /// This information stands in the official data sheet.
     #[inline]
@@ -390,6 +470,7 @@ impl TM1637Adapter {
         (self.pin_dio_mode_fn)(GpioPinMode::INPUT);
         self.bit_delay();
         let ack: GpioPinValue = (self.pin_dio_read_fn)();
+        // todo maybe wait 3-5 cycles until 0 was found to be more failsafe?!
         if ack as u8 != 0 {
             // ACK should be one clock with zero on data lane
             // not possible with no_std; TODO provide debug function

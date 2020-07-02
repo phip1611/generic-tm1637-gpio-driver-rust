@@ -45,10 +45,10 @@ fn main() {
     }
     sleep(Duration::from_secs(1));
 
-    tm1637display.write_segment_raw(LettersToSegmentBits::A as u8, 0);
-    tm1637display.write_segment_raw(LettersToSegmentBits::B as u8, 1);
-    tm1637display.write_segment_raw(LettersToSegmentBits::C as u8, 2);
-    tm1637display.write_segment_raw(LettersToSegmentBits::D as u8, 3);
+    let data = TM1637Adapter::encode_string("Hallo Jenny und Luisa.");
+    for x in 0..(data.len() - DISPLAY_REGISTERS) {
+        tm1637display.write_segments_raw(&data[x..DISPLAY_REGISTERS], 4, 0);
+    }
 }
 
 /// Creates a function/closure for the given pin that changes the mode of the pin.
