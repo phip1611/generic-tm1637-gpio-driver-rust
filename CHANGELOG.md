@@ -1,7 +1,8 @@
 # 1.1.0
-The crate feature "gpio-api-wiringpi" has been added.
+The crate feature `gpio-api-wiringpi` has been added.
 This way you can easily setup the driver using wiringpi
-as GPIO interface.
+as GPIO interface. Also `fourdigit7segdis` is now a default feature
+which could be deactivated in your Cargo.toml.
 
 ```
 Cargo.toml:
@@ -27,6 +28,10 @@ display.write_segment_raw(&[SpecialChars::Minus], 0);
 ```
 
 Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.
+
+### New functions
+- `fourdigit7segdis::display_stopwatch`
+- `TM1637Adapter::encode_number`
 
 # 1.0.0
 Initial release.
