@@ -21,7 +21,7 @@ fn main() {
     let dio_pin = 23;
 
     // setup
-    let bit_delay_fn = || sleep(Duration::from_millis(100));
+    let bit_delay_fn = || sleep(Duration::from_micros(100));
     let bit_delay_fn = Box::from(bit_delay_fn);
     let mut tm1637display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 

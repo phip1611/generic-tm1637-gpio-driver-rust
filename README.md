@@ -106,7 +106,7 @@ use tm1637_gpio_driver::extern_api::setup_wiringpi;
 use std::thread::sleep;
 use std::time::Duration;
 
-let bit_delay_fn = || sleep(Duration::from_millis(100));
+let bit_delay_fn = || sleep(Duration::from_micros(100));
 let bit_delay_fn = Box::from(bit_delay_fn);
 let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 // write "-" on Position 0
