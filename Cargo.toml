@@ -22,8 +22,17 @@ documentation = "https://docs.rs/tm1637-gpio-driver/"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
+# default features:
+default = ["fourdigit7segdis"]
+
+
+# no dependencies; just used for conditional compilation
+fourdigit7segdis = []
+
 # "gpio-api-${crate.name}"
+# mapping from feature to its dependencies
 gpio-api-wiringpi = ["wiringpi"]
 
 [dependencies]
-wiringpi = { version = "*", optional = true }
+#wiringpi = { version = "*", optional = true }
+wiringpi = { version = "0.2.4", optional = true }

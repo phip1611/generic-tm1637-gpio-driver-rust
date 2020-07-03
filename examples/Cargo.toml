@@ -8,6 +8,10 @@ edition = "2018"
 
 [dependencies.tm1637-gpio-driver]
 path = "../"
+
+# in case we would not need the "fourdigit7segment" util
+# default-features = false
+
 # we activate the wiringpi feature
 # we also could initialize the driver manually with wiringpi tho with the same code
 # that setup_wiringpi() uses :)

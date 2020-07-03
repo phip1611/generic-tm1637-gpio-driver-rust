@@ -21,10 +21,12 @@ extern crate alloc;
 
 // Import our enums/arrays for the symbol mappings to the 7 segment display
 pub mod mappings;
+#[cfg(feature = "fourdigit7segdis")]
 pub mod fourdigit7segdis;
+// provides conditionally bindings to specific GPIO interfaces; can be activated via cargo features
 pub mod extern_api;
 
-// use Box: we don't have std::prelude here
+// to use Box: we don't have std::prelude here
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use crate::mappings::{NumCharBits, UpCharBits, SpecialCharBits, LoCharBits};
@@ -313,7 +315,8 @@ impl TM1637Adapter {
     }
 
 
-    /// Encodes a digit from 0 to 9 to it's bit representation on the display.
+    /// Encodes a number/digit from 0 to 9 to it's bit representation on the display.
+    /// This is not the char (ASCII) representation. It's a number/integer.
     pub fn encode_digit(digit: u8) -> u8 {
         let digit = digit % 10;
         if digit == 0 { NumCharBits::Zero as u8 }
