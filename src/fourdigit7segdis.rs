@@ -64,7 +64,7 @@ pub const STOPWATCH_MAX: u16 = 10_000;
 
 /// Starts a stopwatch aka counter from 0 to 9999.
 /// You need to provide a sleep_fn that waits 1s (sets the frequency to 1Hz).
-pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u16) {
+pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u16, blink: bool) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
 
@@ -72,7 +72,7 @@ pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u
     // 0 to 9999
     for i in 0..to {
         let mut data = TM1637Adapter::encode_number(i);
-        if show_dot {
+        if blink && show_dot {
             data[1] |= SegmentBits::SegPoint as u8;
         }
         adapter.write_segments_raw(&data, 4, 0);

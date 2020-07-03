@@ -13,7 +13,7 @@ const DISPLAYS_COUNT: usize = 4;
 /// content on the 4-digit 7-segment display by AZDelivery.
 /// This is the display shown in the gif of the readme.
 ///
-/// This demo shows 4 kinds of using the display to show data.
+/// This demo shows multiple kinds of using the display to show data.
 fn main() {
     // use any GPIO pin you want. This is the number of the pin on the board.
     // The numbers in the example here are available on the Raspberry Pi for example.
@@ -21,6 +21,9 @@ fn main() {
     let dio_pin = 23;
 
     // setup
+    // NOTE: tests showed that sleeping for less than 100µs barely works because the context switches on the CPU
+    // take to long; so there are no  performance differences between 1 and 100µs.
+    // TODO: add "busy waiting"-like implementation: wait in a loop until a time is reached
     let bit_delay_fn = || sleep(Duration::from_micros(100));
     let bit_delay_fn = Box::from(bit_delay_fn);
     let mut tm1637display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
@@ -87,7 +90,10 @@ fn main() {
     // ##############################################################################
 
     // stopwatch from 0 to 10 in 10 seconds
-    display_stopwatch(&mut tm1637display, &|| sleep(Duration::from_secs(1)), 10);
+    display_stopwatch(&mut tm1637display, &|| sleep(Duration::from_secs(1)), 10, true);
+
+    // counter from 0 to 9999 with max speed
+    display_stopwatch(&mut tm1637display, &|| {}, STOPWATCH_MAX, false);
 
     // ##############################################################################
 
