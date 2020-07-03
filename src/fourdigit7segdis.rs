@@ -58,3 +58,16 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
         show_dots = !show_dots;
     }
 }
+
+/// Starts a stopwatch. You need to provide a sleep_fn that waits 1s/ sets the frequency to 1Hz.
+pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn()) {
+    adapter.set_display_state(DisplayState::ON);
+    adapter.set_brightness(Brightness::L7);
+
+    // 0 to 9999
+    for i in 0..10_000 {
+        let data = TM1637Adapter::encode_number(i);
+        adapter.write_segments_raw(&data, 4, 0);
+        sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
+    }
+}

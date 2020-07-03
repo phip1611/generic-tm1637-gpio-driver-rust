@@ -314,6 +314,17 @@ impl TM1637Adapter {
         self.recv_ack();
     }
 
+    /// Encodes a number from 0 to 9999 on the display.
+    pub fn encode_number(num: u16) -> [u8; 4] {
+        let mut num = num % 10000;
+        let mut bits: [u8; 4] = [0; 4];
+        for i in 0..4 {
+            let digit = (num % 10) as u8;
+            bits[3 - i] = TM1637Adapter::encode_digit(digit);
+            num = num / 10;
+        }
+        bits
+    }
 
     /// Encodes a number/digit from 0 to 9 to it's bit representation on the display.
     /// This is not the char (ASCII) representation. It's a number/integer.
@@ -471,5 +482,19 @@ impl TM1637Adapter {
     #[inline]
     fn bit_delay(&self) {
         (self.bit_delay_fn)()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::TM1637Adapter;
+
+    #[test]
+    fn test_encode_number() {
+        let f = TM1637Adapter::encode_digit;
+        assert_eq!([f(1), f(2), f(3), f(4)], TM1637Adapter::encode_number(1234));
+        assert_eq!([f(9), f(9), f(9), f(9)], TM1637Adapter::encode_number(9999));
+        assert_eq!([f(0), f(0), f(0), f(0)], TM1637Adapter::encode_number(10000));
+        assert_eq!([f(7), f(6), f(5), f(4)], TM1637Adapter::encode_number(7654));
     }
 }
