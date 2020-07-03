@@ -74,7 +74,8 @@ fn main() {
     let sleep_fn = || sleep(Duration::from_millis(250));
     display_text_banner_in_loop(
         &mut tm1637display,
-        "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz",
+        // 4 spaces because we want the text to smoothly slide in and out :)
+        "    0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz    ",
         &sleep_fn
     );
 }

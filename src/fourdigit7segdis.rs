@@ -13,13 +13,8 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     adapter.set_brightness(Brightness::L7);
 
     // remove dots because this display only has one double point which looks weird.
-    let text = text.replace(".", " ");
-
-    // format to 7 segment bits
-    let data = TM1637Adapter::encode_string(
-        // 4 spaces because DISPLAY_COUNT == 4
-        &format!("    {}    ", text)
-    );
+    let data = text.replace(".", " ");
+    let data = TM1637Adapter::encode_string(&data);
 
     // display this text over and over again
     loop {
