@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 tm1637-gpio-driver = { path = "../" }
 wiringpi = "0.2"
+chrono = "0.4.12"

@@ -1,5 +1,6 @@
 extern crate tm1637_gpio_driver;
 extern crate wiringpi;
+extern crate crono;
 
 use wiringpi::pin::Value as WiringPiVal;
 use std::rc::Rc;
@@ -8,7 +9,8 @@ use wiringpi::WiringPi;
 use std::thread::sleep;
 use std::time::Duration;
 use tm1637_gpio_driver::mappings::SpecialCharBits;
-use tm1637_gpio_driver::fourdigit7segdis::display_text_banner_in_loop;
+use tm1637_gpio_driver::fourdigit7segdis::{display_text_banner_in_loop, display_current_time};
+use chrono::Local;
 
 /// Simple example that shows you how you can use the driver along with crate "wiringpi" to display
 /// content on the 4-digit 7-segment display by AZDelivery.
@@ -71,13 +73,26 @@ fn main() {
     // ##############################################################################
 
     // display this text over and over again
-    let sleep_fn = || sleep(Duration::from_millis(250));
+    /*let sleep_fn = || sleep(Duration::from_millis(250));
     display_text_banner_in_loop(
         &mut tm1637display,
         // 4 spaces because we want the text to smoothly slide in and out :)
         "    0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz    ",
         &sleep_fn
-    );
+    );*/
+
+    // ##############################################################################
+
+    // 2Hz
+    let tick_fn = || sleep(Duration::from_millis(500));
+    let time_fn: dyn Fn() -> (&str, &str) = || {
+        let date = Local::now();
+        //let date = date.format("%H:%M").to_string();
+        let date = date.format("%M:%S").to_string();
+        let [l, r] = date.split_at(2);
+        (l, r)
+    };
+    display_current_time(&mut tm1637display, &tick_fn, &time_fn);
 }
 
 /// Creates a function/closure for the given pin that changes the mode of the pin.
