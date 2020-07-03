@@ -36,9 +36,8 @@ dummy = []
 # "gpio-api-${crate.name}"
 # mapping from feature to its dependencies
 gpio-api-wiringpi = ["wiringpi"]
-
+gpio-api-gpio_cdev = ["gpio-cdev"]
 gpio-api-sysfs_gpio = ["sysfs_gpio"]
-
 gpio-api-gpio = ["gpio"]
 
 ##################################################
@@ -47,3 +46,4 @@ gpio-api-gpio = ["gpio"]
 wiringpi = { version = "0.2.4", optional = true }
 sysfs_gpio = { version = "0.5.4", optional = true }
 gpio = { version = "0.4.0", optional = true }
+gpio-cdev = { version = "0.3.0", optional = true }

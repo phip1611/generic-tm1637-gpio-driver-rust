@@ -17,6 +17,7 @@
 
 // from rust core library; no "external crate" in the manner that this is no crates.io dependency;
 // needed because no_std
+#[macro_use] // wee need the !format macro
 extern crate alloc;
 
 // Import our enums/arrays for the symbol mappings to the 7 segment display
