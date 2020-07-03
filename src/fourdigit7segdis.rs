@@ -5,13 +5,12 @@
 pub const DISPLAY_COUNT: usize = 4;
 
 use crate::{TM1637Adapter, DisplayState, Brightness};
-use alloc::string::String;
 
 /// Displays a text over and over again. The text will move "animated" accross the
 /// screen from right to left.
-pub fn display_text_banner_in_loop(ad: &mut TM1637Adapter, text: &str, sleep_fn: &dyn Fn()) {
-    ad.set_display_state(DisplayState::ON);
-    ad.set_brightness(Brightness::L7);
+pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, sleep_fn: &dyn Fn()) {
+    adapter.set_display_state(DisplayState::ON);
+    adapter.set_brightness(Brightness::L7);
 
     // remove dots because this display only has one double point which looks weird.
     let text = text.replace(".", " ");
@@ -25,7 +24,7 @@ pub fn display_text_banner_in_loop(ad: &mut TM1637Adapter, text: &str, sleep_fn:
     // display this text over and over again
     loop {
         for x in 0..(data.len() - DISPLAY_COUNT) {
-            tm1637display.write_segments_raw(&data[x..(x + DISPLAY_COUNT)], 4, 0);
+            adapter.write_segments_raw(&data[x..(x + DISPLAY_COUNT)], 4, 0);
             sleep_fn();
         }
     }

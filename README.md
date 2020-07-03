@@ -4,6 +4,7 @@ Zero-dependency generic GPIO driver for the TM1637 micro controller. It is used 
 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
 Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
 interface/library on your own. Also it uses no std-lib so it can be used in embedded systems.
+An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
 
 This driver could/should work with other displays too if they use a TM1637 micro controller with the same
 I2C-like serial bus protocol specified in the [data sheet](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf).
