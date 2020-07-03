@@ -5,7 +5,8 @@ authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
     "az-delivery-4-digit-7-segment-tm1637.gif",
-    "examples/"
+    "examples/",
+    ".travis.yml"
 ]
 keywords = ["gpio", "tm1637"]
 categories = ["embedded", "no-std", "hardware-support" ]
