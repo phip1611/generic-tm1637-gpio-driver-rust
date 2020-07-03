@@ -5,6 +5,8 @@ authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
     "az-delivery-4-digit-7-segment-tm1637.gif",
+    "example-moving-text.gif",
+    "example-time.gif",
     "examples/",
     ".travis.yml"
 ]

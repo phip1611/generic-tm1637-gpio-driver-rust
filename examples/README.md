@@ -6,3 +6,11 @@ This is the display shown here:
 
 There are multiple examples separated by comments in the main() function.
 You can use the driver directly or use some of the utility functions provided in module `fourdigit7segdis`.
+
+##### Moving text:
+
+![gpio demonstration](../example-moving-text.gif)
+
+##### Time with blinking double point:
+
+![gpio demonstration](../example-time.gif)

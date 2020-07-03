@@ -14,6 +14,14 @@ I created this library/driver for fun and to learn new things!
 See this demo (gif) I made with my Raspberry Pi using regular GPIO pins:
 
 ![gpio demonstration](az-delivery-4-digit-7-segment-tm1637.gif)
+
+Moving Text:
+
+![gpio demonstration](example-moving-text.gif)
+
+Time with blinking double point:
+
+![gpio demonstration](example-time.gif)
  
 ## How does this work? How do I write a driver for that thing?
 This was my first time writing a (super simple basic) kind of a device driver.
@@ -22,6 +30,8 @@ After some time I understood how it works by looking at the [data sheet](https:/
 ). Have a look into my code too! I tried to make as many comments as possible.
 
 ## How can I use it?
+You can find code examples in the [github repository](https://github.com/phip1611/generic-tm1637-gpio-driver-rust)!
+
 My driver/library is not dependent on a specific GPIO interface.
 You can use [crates.io: wiringpi](https://crates.io/crates/wiringpi) or [crates.io: gpio](https://crates.io/crates/gpio)
 for example. I tested both on my Raspberry Pi. My `TM1637Adapter` needs functions/closures 
@@ -31,6 +41,44 @@ There are also utility functions on top of the driver in the module `fourdigit7s
 7-segment display. You can use them or write your own functions on top of the driver.
 
 **To add this driver to your project just add the [crate](https://crates.io/crates/tm1637-gpio-driver) to your Rust project.**
+
+## Minimal Code
+```
+// pass all wrapper functions to the adapter.
+// wrapper functions are the glue between your GPIO interface and
+// my adapter/lib/driver. See the examples on github how to create them!
+// It's quite ease :)
+
+let display = TM1637Adapter::new(
+    // allows the adapter to change the mode of the clock pin
+    pin_clock_mode_fn,
+
+    // allows the adapter to write High/Low to clock pin
+    pin_clock_write_fn,
+
+    // allows the adapter to change the mode of the dio (data input outut) pin
+    pin_dio_mode_fn,
+
+    // allows the adapter to write High/Low to DIO pin
+    pin_dio_write_fn,
+
+    // allows the read the DIO pin
+    pin_dio_read_fn,
+
+    // function that sleeps for example 10µs when it's invoked.
+    // because the driver uses no-std it can't sleep by itself 
+    // we need this to actually have the data signal on the wires 
+    // (high to low and vice versa has a small delay of a few nano or micro seconds)
+    bit_delay_fn,
+);
+
+// default settings
+// display.set_display_state(DisplayState::ON);
+// display.set_brightness(Brightness::L7);
+
+// write "-" on Position 0
+display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
+```
 
 ## Does this work only on Raspberry Pi?
 Probably no! Although I can't test it because I don't have an Arduino or another similar device.
