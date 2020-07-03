@@ -6,6 +6,7 @@ pub const DISPLAY_COUNT: usize = 4;
 
 use crate::{TM1637Adapter, DisplayState, Brightness};
 use crate::mappings::SegmentBits;
+use alloc::string::String;
 
 /// Displays a text over and over again. The text will move "animated" accross the
 /// screen from right to left.
@@ -28,19 +29,19 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
 
 pub fn display_current_time(adapter: &mut TM1637Adapter,
                                   tick_fn: &dyn Fn(),
-                                  time_fn: &dyn Fn() -> (&str, &str)) {
+                                  time_fn: &dyn Fn() -> (String, String)) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
 
     let mut show_dots = false;
     loop {
         // could be hh:mm or mm::ss
-        let (l, r) = (time_fn)();
+        let (l, r): (String, String) = (time_fn)();
         let mut data: [u8; DISPLAY_COUNT] = [
-            TM1637Adapter::encode_char(l[0]),
-            TM1637Adapter::encode_char(l[1]),
-            TM1637Adapter::encode_char(r[0]),
-            TM1637Adapter::encode_char(r[1]),
+            TM1637Adapter::encode_char(l.chars().nth(0).unwrap()),
+            TM1637Adapter::encode_char(l.chars().nth(1).unwrap()),
+            TM1637Adapter::encode_char(r.chars().nth(0).unwrap()),
+            TM1637Adapter::encode_char(r.chars().nth(1).unwrap()),
         ];
 
         if show_dots {

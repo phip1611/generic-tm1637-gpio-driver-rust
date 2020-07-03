@@ -30,19 +30,19 @@ fn main() {
         TM1637Adapter::encode_digit(4),
     ];
     tm1637display.write_segments_raw(&data, DISPLAYS_COUNT as u8, 0);
-    sleep(Duration::from_secs(2));
+    sleep(Duration::from_secs(1));
 
     // ##############################################################################
 
     // set both in the middle to "-"
     tm1637display.write_segment_raw(SpecialCharBits::Minus as u8, 1);
     tm1637display.write_segment_raw(SpecialCharBits::Minus as u8, 2);
-    sleep(Duration::from_secs(2));
+    sleep(Duration::from_secs(1));
 
     // ##############################################################################
 
     // animation that increases the brightness of the display
-    for _ in 0..5 {
+    for _ in 0..3 {
         // Turn Display off
         tm1637display.set_display_state(DisplayState::OFF);
         tm1637display.write_display_state();
@@ -85,11 +85,14 @@ fn main() {
 
     // 2Hz
     let tick_fn = || sleep(Duration::from_millis(500));
-    let time_fn: dyn Fn() -> (&str, &str) = || {
+    let time_fn: dyn Fn() -> (String, String) = || {
         let date = Local::now();
-        //let date = date.format("%H:%M").to_string();
-        let date = date.format("%M:%S").to_string();
-        let [l, r] = date.split_at(2);
+
+        // this is not so nice but I don't know a better solution
+
+        //let l = date.format("%H").to_string();
+        let l = date.format("%M").to_string();
+        let r = date.format("%S").to_string();
         (l, r)
     };
     display_current_time(&mut tm1637display, &tick_fn, &time_fn);
