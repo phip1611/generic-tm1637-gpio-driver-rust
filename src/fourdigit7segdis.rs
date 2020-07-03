@@ -28,8 +28,8 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
 }
 
 pub fn display_current_time(adapter: &mut TM1637Adapter,
-                                  tick_fn: &dyn Fn(),
-                                  time_fn: &dyn Fn() -> (String, String)) {
+                            tick_fn: &dyn Fn(),
+                            time_fn: &dyn Fn() -> (String, String)) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
 
@@ -47,6 +47,8 @@ pub fn display_current_time(adapter: &mut TM1637Adapter,
         if show_dots {
             data[1] = data[1] | SegmentBits::SegPoint as u8;
         }
+
+        adapter.write_segments_raw(&data, 4, 0);
 
         (tick_fn)();
 
