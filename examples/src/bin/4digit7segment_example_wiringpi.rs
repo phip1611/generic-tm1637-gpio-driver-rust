@@ -1,18 +1,10 @@
-extern crate tm1637_gpio_driver;
-extern crate wiringpi;
-//extern crate crono;
-
 use chrono::prelude::*;
-
-use wiringpi::pin::Value as WiringPiVal;
-use std::rc::Rc;
-use tm1637_gpio_driver::{GpioPinMode, TM1637Adapter, Brightness, GpioPinValue, DisplayState};
-use wiringpi::WiringPi;
 use std::thread::sleep;
 use std::time::Duration;
+use tm1637_gpio_driver::extern_api::setup_wiringpi;
+use tm1637_gpio_driver::{TM1637Adapter, DisplayState, Brightness};
 use tm1637_gpio_driver::mappings::SpecialCharBits;
-use tm1637_gpio_driver::fourdigit7segdis::{display_text_banner_in_loop, display_current_time_in_loop};
-use chrono::Local;
+use tm1637_gpio_driver::fourdigit7segdis::display_current_time_in_loop;
 
 // We have 4 displays
 const DISPLAYS_COUNT: usize = 4;
@@ -28,7 +20,9 @@ fn main() {
     let clk_pin = 18;
     let dio_pin = 23;
 
-    let mut tm1637display = setup(clk_pin, dio_pin);
+    let bit_delay_fn = || sleep(Duration::from_millis(100));
+    let bit_delay_fn = Box::from(bit_delay_fn);
+    let mut tm1637display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 
     // display "1 2 3 4"
     let data: [u8; DISPLAYS_COUNT] = [
@@ -109,60 +103,4 @@ fn main() {
     display_current_time_in_loop(&mut tm1637display, &tick_fn, &time_fn);
 }
 
-/// Creates a function/closure for the given pin that changes the mode of the pin.
-fn pin_mode_fn_factory(gpio_pin_num: u16, gpio: Rc<WiringPi<wiringpi::pin::Gpio>>) -> Box<dyn Fn(GpioPinMode)> {
-    Box::from(move |mode| {
-        if let GpioPinMode::INPUT = mode {
-            gpio.input_pin(gpio_pin_num);
-        } else {
-            gpio.output_pin(gpio_pin_num);
-        }
-    })
-}
-
-/// Sets up the TM1637Adapter using wiringpi as GPIO interface.
-fn setup(clk_pin: u16, dio_pin: u16) -> TM1637Adapter {
-    let gpio = wiringpi::setup_gpio();
-    let gpio = Rc::from(gpio);
-
-    // set up all the wrapper functions that connects the tm1637-driver with wiringpi
-    let pin_clock_mode_fn = pin_mode_fn_factory(clk_pin, gpio.clone());
-    let pin_clock_write_fn = pin_write_fn_factory(clk_pin, gpio.clone());
-    let pin_dio_mode_fn = pin_mode_fn_factory(clk_pin, gpio.clone());
-    let pin_dio_write_fn = pin_write_fn_factory(dio_pin, gpio.clone());
-    let pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue> = pin_read_fn_factory(dio_pin, gpio.clone());
-    // set up delay-fn: sleep() is not available in lib because it is zero dependency
-    let bit_delay_fn: Box<dyn Fn() -> ()> = Box::from(|| {
-        sleep(Duration::from_micros(10));
-    });
-
-    // pass all wrapper functions to the adapter.
-    TM1637Adapter::new(
-        pin_clock_mode_fn,
-        pin_clock_write_fn,
-        pin_dio_mode_fn,
-        pin_dio_write_fn,
-        pin_dio_read_fn,
-        bit_delay_fn,
-    )
-}
-
-/// Creates a function/closure for the given pin that changes the value of the pin.
-fn pin_write_fn_factory(gpio_pin_num: u16, gpio: Rc<WiringPi<wiringpi::pin::Gpio>>) -> Box<dyn Fn(GpioPinValue)> {
-    Box::from(move |bit| {
-        if let GpioPinValue::HIGH = bit {
-            gpio.output_pin(gpio_pin_num).digital_write(WiringPiVal::High);
-        } else {
-            gpio.output_pin(gpio_pin_num).digital_write(WiringPiVal::Low);
-        }
-    })
-}
-
-/// Creates a function/closure for the given pin that reads its value in the moment of invocation.
-fn pin_read_fn_factory(gpio_pin_num: u16, gpio: Rc<WiringPi<wiringpi::pin::Gpio>>) -> Box<dyn Fn() -> GpioPinValue> {
-    Box::from(move || {
-        let res: WiringPiVal = gpio.input_pin(gpio_pin_num).digital_read();
-        return if let WiringPiVal::High = res { GpioPinValue::HIGH } else { GpioPinValue::LOW }
-    })
-}
 

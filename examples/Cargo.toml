@@ -6,7 +6,12 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[dependencies.tm1637-gpio-driver]
+path = "../"
+# we activate the wiringpi feature
+# we also could initialize the driver manually with wiringpi tho with the same code
+# that setup_wiringpi() uses :)
+features = ["gpio-api-wiringpi"]
+
 [dependencies]
-tm1637-gpio-driver = { path = "../" }
-wiringpi = "0.2"
 chrono = "0.4.12"

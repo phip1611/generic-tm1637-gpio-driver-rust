@@ -21,4 +21,9 @@ documentation = "https://docs.rs/tm1637-gpio-driver/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+# "gpio-api-${crate.name}"
+gpio-api-wiringpi = ["wiringpi"]
+
 [dependencies]
+wiringpi = { version = "*", optional = true }

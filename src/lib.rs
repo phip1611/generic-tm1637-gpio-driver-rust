@@ -22,6 +22,7 @@ extern crate alloc;
 // Import our enums/arrays for the symbol mappings to the 7 segment display
 pub mod mappings;
 pub mod fourdigit7segdis;
+pub mod extern_api;
 
 // use Box: we don't have std::prelude here
 use alloc::boxed::Box;
