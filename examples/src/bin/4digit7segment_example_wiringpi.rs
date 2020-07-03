@@ -103,7 +103,7 @@ fn main() {
         let l = date.format("%H").to_string();
         //let r = date.format("%S").to_string();
         let r = date.format("%M").to_string();
-        println!("{}:{}", l, r);
+        // println!("{}:{}", l, r);
         (l, r)
     };
     display_current_time_in_loop(&mut tm1637display, &tick_fn, &time_fn);
