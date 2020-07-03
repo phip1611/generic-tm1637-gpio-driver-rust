@@ -13,8 +13,8 @@ path = "../"
 # default-features = false
 
 # we activate the wiringpi feature
-# we also could initialize the driver manually with wiringpi tho with the same code
-# that setup_wiringpi() uses :)
+# we also could initialize the driver manually with wiringpi tho with the
+# same or similar code that setup_wiringpi() uses :)
 features = ["gpio-api-wiringpi"]
 
 [dependencies]

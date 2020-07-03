@@ -1,10 +1,9 @@
 [package]
 name = "tm1637-gpio-driver"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
-    "az-delivery-4-digit-7-segment-tm1637.gif",
     "example-moving-text.gif",
     "example-time.gif",
     "examples/",

@@ -3,8 +3,11 @@
 Zero-dependency generic GPIO driver for the TM1637 micro controller. It is used in the
 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
 Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
-interface/library on your own. Also it uses no std-lib so it can be used in embedded systems.
-An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
+interface/library on your own. If you activate the crate feature `gpio-api-wiringpi` then you can easily
+use wiring Pi. But you can also set it up on your own. Just look into the code to see how it is done.
+_More setup functions for GPIO APIs could be integrated in the future._
+ 
+This crate is `#[no_std]` An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
 
 This driver could/should work with other displays too if they use a TM1637 micro controller with the same
 I2C-like serial bus protocol specified in the [data sheet](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf).
@@ -12,8 +15,6 @@ I2C-like serial bus protocol specified in the [data sheet](https://www.mcielectr
 I created this library/driver for fun and to learn new things!
 
 See this demo (gif) I made with my Raspberry Pi using regular GPIO pins:
-
-![gpio demonstration](az-delivery-4-digit-7-segment-tm1637.gif)
 
 Moving Text:
 
@@ -38,12 +39,20 @@ for example. I tested both on my Raspberry Pi. My `TM1637Adapter` needs function
 as parameters. These functions are wrappers to write High/Low to the desired Pins.
 
 There are also utility functions on top of the driver in the module `fourdigit7segdis` for the 4-digit
-7-segment display. You can use them or write your own functions on top of the driver.
+7-segment display. You can use them, learn from them or write your own functions on top of the driver.
 
 **To add this driver to your project just add the [crate](https://crates.io/crates/tm1637-gpio-driver) to your Rust project.**
 
-## Minimal Code
+## Minimal Code (manual setup)
 ```
+Cargo.toml:
+[dependencies]
+tm1637-gpio-driver = "1.1.0"
+
+-------------
+
+code.rs: 
+
 // pass all wrapper functions to the adapter.
 // wrapper functions are the glue between your GPIO interface and
 // my adapter/lib/driver. See the examples on github how to create them!
@@ -80,6 +89,30 @@ let display = TM1637Adapter::new(
 display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
 ```
 
+## Minimal code (using built-in feature "gpio-api-wiringpi")
+```
+Cargo.toml:
+
+[dependencies.tm1637-gpio-driver]
+version = "1.1.0"
+features = ["gpio-api-wiringpi"]
+
+
+-------------
+
+code.rs:
+
+use tm1637_gpio_driver::extern_api::setup_wiringpi;
+use std::thread::sleep;
+use std::time::Duration;
+
+let bit_delay_fn = || sleep(Duration::from_millis(100));
+let bit_delay_fn = Box::from(bit_delay_fn);
+let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
+// write "-" on Position 0
+display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
+```
+
 ## Does this work only on Raspberry Pi?
 Probably no! Although I can't test it because I don't have an Arduino or another similar device.
 This should work on every device where you can write a Rust program for. Since this lib
@@ -94,13 +127,13 @@ Feel free to contribute on [Github](https://github.com/phip1611/generic-tm1637-g
 message me on Twitter (https://twitter.com/phip1611)!
  
 ### Special thanks
-Special thanks to https://github.com/avishorp/TM1637. His driver for the Arduino platform
-helped me to understand how the TM1637 micro controller works. With his work and my
+Special thanks to the creator of the [driver for the Arduino](https://github.com/avishorp/TM1637). His/her (? - don't know) driver for the Arduino platform
+helped me to understand how the TM1637 micro controller works. With this work and my
 effort I put into understanding the data sheet I could make this driver.
 I also learned a lot about serial data transfer and the I2C-like serial bus protocol used by
 the TM1637.
 
-I don't use any of his code directly. It just gave me some inspiration.
+I don't use any of the code. It just gave me some inspiration.
 
 ### Troubleshooting
 - Data is not correctly displayed on display
