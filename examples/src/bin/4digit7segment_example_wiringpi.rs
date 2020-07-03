@@ -8,6 +8,7 @@ use wiringpi::WiringPi;
 use std::thread::sleep;
 use std::time::Duration;
 use tm1637_gpio_driver::mappings::SpecialCharBits;
+use tm1637_gpio_driver::fourdigit7segdis::display_text_banner_in_loop;
 
 /// Simple example that shows you how you can use the driver along with crate "wiringpi" to display
 /// content on the 4-digit 7-segment display by AZDelivery.
@@ -70,13 +71,12 @@ fn main() {
     // ##############################################################################
 
     // display this text over and over again
-    loop {
-        let data = TM1637Adapter::encode_string("    Hello World    ");
-        for x in 0..(data.len() - DISPLAYS_COUNT) {
-            tm1637display.write_segments_raw(&data[x..(x + DISPLAYS_COUNT)], 4, 0);
-            sleep(Duration::from_millis(400));
-        }
-    }
+    let sleep_fn = || sleep(Duration::from_millis(250));
+    display_text_banner_in_loop(
+        &mut tm1637display,
+        "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz",
+        &sleep_fn
+    );
 }
 
 /// Creates a function/closure for the given pin that changes the mode of the pin.
