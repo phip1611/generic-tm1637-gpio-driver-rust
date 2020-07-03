@@ -19,7 +19,7 @@ See this demo (gif) I made with my Raspberry Pi using regular GPIO pins:
 This was my first time writing a (super simple basic) kind of a device driver.
 As of now I'm not that much experienced with micro controllers.
 After some time I understood how it works by looking at the [data sheet](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf 
-). Have a look into my code. I tried to make as many comments as possible.
+). Have a look into my code too! I tried to make as many comments as possible.
 
 ## How can I use it?
 My driver/library is not dependent on a specific GPIO interface.
@@ -27,9 +27,14 @@ You can use [crates.io: wiringpi](https://crates.io/crates/wiringpi) or [crates.
 for example. I tested both on my Raspberry Pi. My `TM1637Adapter` needs functions/closures 
 as parameters. These functions are wrappers to write High/Low to the desired Pins.
 
+There are also utility functions on top of the driver in the module `fourdigit7segdis` for the 4-digit
+7-segment display. You can use them or write your own functions on top of the driver.
+
+**To add this driver to your project just add the [crate](https://crates.io/crates/tm1637-gpio-driver) to your Rust project.**
+
 ## Does this work only on Raspberry Pi?
-Probably no! Although I can't test it because I don't have an Arduino or another similar device
-this should work on every device where you can write a Rust program for. Since this lib
+Probably no! Although I can't test it because I don't have an Arduino or another similar device.
+This should work on every device where you can write a Rust program for. Since this lib
 uses no standard library this should work on embedded devices. If you use it let me know
 what things you've built!
 
@@ -48,6 +53,17 @@ I also learned a lot about serial data transfer and the I2C-like serial bus prot
 the TM1637.
 
 I don't use any of his code directly. It just gave me some inspiration.
+
+### Troubleshooting
+- Data is not correctly displayed on display
+  - either your device is broken (I ordered 3 and 1 of 3 were broken) or you probably have
+    a to high frequency. Make sure the bit-delay for `TM1637Adapter::new` is not too short.
+    100µs on Raspberry Pi should be totally fine (but 1µs worked also for me) 
+  - check cables and GPIO-pins (clk, dio)
+- Raspberry Pi / Raspberry Pi OS
+  - "Permission denied"
+    - make sure your user is part of the "gpio" group
+    - `sudo usermod -a -G gpio <your-user-name>` 
 
 ### Trivia
 - There is another library on crates.io for the TM1637: https://github.com/igelbox/tm1637-rs

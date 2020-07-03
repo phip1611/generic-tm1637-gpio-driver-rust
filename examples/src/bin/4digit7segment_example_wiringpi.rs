@@ -11,8 +11,11 @@ use wiringpi::WiringPi;
 use std::thread::sleep;
 use std::time::Duration;
 use tm1637_gpio_driver::mappings::SpecialCharBits;
-use tm1637_gpio_driver::fourdigit7segdis::{display_text_banner_in_loop, display_current_time};
+use tm1637_gpio_driver::fourdigit7segdis::{display_text_banner_in_loop, display_current_time_in_loop};
 use chrono::Local;
+
+// We have 4 displays
+const DISPLAYS_COUNT: usize = 4;
 
 /// Simple example that shows you how you can use the driver along with crate "wiringpi" to display
 /// content on the 4-digit 7-segment display by AZDelivery.
@@ -20,9 +23,73 @@ use chrono::Local;
 ///
 /// This demo shows 4 kinds of using the display to show data.
 fn main() {
-    // We have 4 displays
-    const DISPLAYS_COUNT: usize = 4;
-    let mut tm1637display = setup();
+    // use any GPIO pin you want. This is the number of the pin on the board.
+    // The numbers in the example here are available on the Raspberry Pi for example.
+    let clk_pin = 18;
+    let dio_pin = 23;
+
+    let mut tm1637display = setup(clk_pin, dio_pin);
+
+    // display "1 2 3 4"
+    let data: [u8; DISPLAYS_COUNT] = [
+        TM1637Adapter::encode_digit(1),
+        TM1637Adapter::encode_digit(2),
+        TM1637Adapter::encode_digit(3),
+        TM1637Adapter::encode_digit(4),
+    ];
+    tm1637display.write_segments_raw(&data, DISPLAYS_COUNT as u8, 0);
+    sleep(Duration::from_secs(1));
+
+    // ##############################################################################
+
+    // set both in the middle to "-"
+    tm1637display.write_segment_raw(SpecialCharBits::Minus as u8, 1);
+    tm1637display.write_segment_raw(SpecialCharBits::Minus as u8, 2);
+    sleep(Duration::from_secs(1));
+
+    // ##############################################################################
+
+    // animation that increases the brightness of the display
+    for _ in 0..3 {
+        // Turn Display off
+        tm1637display.set_display_state(DisplayState::OFF);
+        tm1637display.write_display_state();
+        sleep(Duration::from_millis(200));
+
+        // Turn display on again
+        tm1637display.set_display_state(DisplayState::ON);
+        tm1637display.set_brightness(Brightness::L0);
+        tm1637display.write_display_state();
+
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L2);
+        tm1637display.write_display_state();
+
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L4);
+        tm1637display.write_display_state();
+
+        sleep(Duration::from_millis(200));
+        tm1637display.set_brightness(Brightness::L7);
+        tm1637display.write_display_state();
+
+        sleep(Duration::from_millis(200));
+    }
+
+    sleep(Duration::from_secs(1));
+
+    // ##############################################################################
+
+    // display this text over and over again
+    /*let sleep_fn = || sleep(Duration::from_millis(250));
+    display_text_banner_in_loop(
+        &mut tm1637display,
+        // 4 spaces because we want the text to smoothly slide in and out :)
+        "    0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz    ",
+        &sleep_fn
+    );*/
+
+    // ##############################################################################
 
 
     // 1Hz: blinking double point clock (hh:mm)
@@ -39,7 +106,7 @@ fn main() {
         println!("{}:{}", l, r);
         (l, r)
     };
-    display_current_time(&mut tm1637display, &tick_fn, &time_fn);
+    display_current_time_in_loop(&mut tm1637display, &tick_fn, &time_fn);
 }
 
 /// Creates a function/closure for the given pin that changes the mode of the pin.
@@ -54,11 +121,7 @@ fn pin_mode_fn_factory(gpio_pin_num: u16, gpio: Rc<WiringPi<wiringpi::pin::Gpio>
 }
 
 /// Sets up the TM1637Adapter using wiringpi as GPIO interface.
-fn setup() -> TM1637Adapter {
-    // use any GPIO pin you want
-    let clk_pin = 18;
-    let dio_pin = 23;
-
+fn setup(clk_pin: u16, dio_pin: u16) -> TM1637Adapter {
     let gpio = wiringpi::setup_gpio();
     let gpio = Rc::from(gpio);
 

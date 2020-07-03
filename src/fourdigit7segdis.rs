@@ -10,6 +10,7 @@ use alloc::string::String;
 
 /// Displays a text over and over again. The text will move "animated" accross the
 /// screen from right to left.
+/// Blocks the calling thread because this is an infinite loop.
 pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, sleep_fn: &dyn Fn()) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
@@ -27,7 +28,9 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     }
 }
 
-pub fn display_current_time(adapter: &mut TM1637Adapter,
+/// Displays "hh:mm" with blinking double point on the display.
+/// Blocks the calling thread because this is an infinite loop.
+pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
                             tick_fn: &dyn Fn(),
                             time_fn: &dyn Fn() -> (String, String)) {
     adapter.set_display_state(DisplayState::ON);

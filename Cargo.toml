@@ -12,6 +12,7 @@ keywords = ["gpio", "tm1637"]
 categories = ["embedded", "no-std", "hardware-support" ]
 description = "Zero-dependency generic GPIO driver for the TM1637 micro controller. Doesn't need std-lib and you can choose a GPIO interface/library on your own."
 readme = "README.md"
+license-file = "LICENSE"
 homepage = "https://github.com/phip1611/generic-tm1637-gpio-driver-rust"
 repository = "https://github.com/phip1611/generic-tm1637-gpio-driver-rust"
 documentation = "https://docs.rs/tm1637-gpio-driver/"
