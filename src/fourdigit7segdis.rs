@@ -59,7 +59,8 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
     }
 }
 
-pub const STOPWATCH_MAX: u16 = 10_0000;
+/// Maximum value for stopwatch.
+pub const STOPWATCH_MAX: u16 = 10_000;
 
 /// Starts a stopwatch aka counter from 0 to 9999.
 /// You need to provide a sleep_fn that waits 1s (sets the frequency to 1Hz).
@@ -69,7 +70,7 @@ pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u
 
     let mut show_dot = false;
     // 0 to 9999
-    for i in 0..STOPWATCH_MAX {
+    for i in 0..to {
         let mut data = TM1637Adapter::encode_number(i);
         if show_dot {
             data[1] |= SegmentBits::SegPoint as u8;
