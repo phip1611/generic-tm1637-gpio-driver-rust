@@ -4,7 +4,7 @@ use std::time::Duration;
 use tm1637_gpio_driver::extern_api::setup_wiringpi;
 use tm1637_gpio_driver::{TM1637Adapter, DisplayState, Brightness};
 use tm1637_gpio_driver::mappings::SpecialCharBits;
-use tm1637_gpio_driver::fourdigit7segdis::display_current_time_in_loop;
+use tm1637_gpio_driver::fourdigit7segdis::{display_current_time_in_loop, display_stopwatch, STOPWATCH_MAX};
 
 // We have 4 displays
 const DISPLAYS_COUNT: usize = 4;
@@ -86,6 +86,10 @@ fn main() {
 
     // ##############################################################################
 
+    // stopwatch from 0 to 10 in 10 seconds
+    display_stopwatch(&mut tm1637display, &|| sleep(Duration::from_secs(1)), 10);
+
+    // ##############################################################################
 
     // 1Hz: blinking double point clock (hh:mm)
     let tick_fn = || sleep(Duration::from_secs(1));
