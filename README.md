@@ -86,7 +86,7 @@ let display = TM1637Adapter::new(
 // display.set_brightness(Brightness::L7);
 
 // write "-" on Position 0
-display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
+display.write_segment_raw(&[SpecialChars::Minus], 0);
 ```
 
 ## Minimal code (using built-in feature "gpio-api-wiringpi")
@@ -110,7 +110,7 @@ let bit_delay_fn = || sleep(Duration::from_millis(100));
 let bit_delay_fn = Box::from(bit_delay_fn);
 let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 // write "-" on Position 0
-display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
+display.write_segment_raw(&[SpecialChars::Minus], 0);
 ```
 
 *Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.*
