@@ -1,7 +1,7 @@
 # Generic TM1637 GPIO Driver
 
-Zero-dependency generic GPIO driver for the TM1637 micro controller. It is used in the
-4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
+Zero-dependency generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. 
+It is used in the 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
 Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
 interface/library on your own. If you activate the crate feature `gpio-api-wiringpi` then you can easily
 use wiring Pi. But you can also set it up on your own. Just look into the code to see how it is done.
@@ -112,6 +112,8 @@ let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 // write "-" on Position 0
 display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
 ```
+
+*Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.*
 
 ## Does this work only on Raspberry Pi?
 Probably no! Although I can't test it because I don't have an Arduino or another similar device.

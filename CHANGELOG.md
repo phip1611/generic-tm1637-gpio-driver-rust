@@ -26,5 +26,7 @@ let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 display.write_segments_raw(&[SpecialChars::Minus], 1, 0);
 ```
 
+Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.
+
 # 1.0.0
 Initial release.
