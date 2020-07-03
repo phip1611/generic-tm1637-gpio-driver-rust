@@ -1,6 +1,8 @@
 extern crate tm1637_gpio_driver;
 extern crate wiringpi;
-extern crate crono;
+//extern crate crono;
+
+use chrono::prelude::*;
 
 use wiringpi::pin::Value as WiringPiVal;
 use std::rc::Rc;
@@ -85,7 +87,7 @@ fn main() {
 
     // 2Hz
     let tick_fn = || sleep(Duration::from_millis(500));
-    let time_fn: dyn Fn() -> (String, String) = || {
+    let time_fn = || {
         let date = Local::now();
 
         // this is not so nice but I don't know a better solution
