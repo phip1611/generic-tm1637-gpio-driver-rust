@@ -24,7 +24,6 @@ documentation = "https://docs.rs/tm1637-gpio-driver/"
 # default features:
 default = ["fourdigit7segdis"]
 
-
 # no dependencies; just used for conditional compilation
 fourdigit7segdis = []
 

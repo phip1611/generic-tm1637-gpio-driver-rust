@@ -147,6 +147,12 @@ I don't use any of the code. It just gave me some inspiration.
   - "Permission denied"
     - make sure your user is part of the "gpio" group
     - `sudo usermod -a -G gpio <your-user-name>` 
+- bit delay function: no difference between 1 and 100µs
+  - if you use thread::sleep() as your bit delay function then you gonna have a problem when it comes
+    to a few micro seconds: the operating system (or better to say the hardware) is not fast enough
+    in switching threads in that time
+  - in that case you should use a "busy waiting"-like approach that doesn't send the thread into sleep mode
+    but wait in a loop until a certain time has been reached.
 
 ### Trivia
 - There is another library on crates.io for the TM1637: https://github.com/igelbox/tm1637-rs
