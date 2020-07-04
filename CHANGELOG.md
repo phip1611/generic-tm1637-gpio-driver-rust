@@ -1,3 +1,6 @@
+# 1.1.1
+Replaced `thread::sleep` in examples by a busy waiting approach for way better latency!
+
 # 1.1.0
 The crate feature `gpio-api-wiringpi` has been added.
 This way you can easily setup the driver using wiringpi
