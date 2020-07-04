@@ -1,3 +1,6 @@
+# 1.1.4
+Fix in README example.
+
 # 1.1.3 
 More small code improvements + comments.
 
@@ -33,7 +36,7 @@ let bit_delay_fn = || sleep(Duration::from_micros(100));
 let bit_delay_fn = Box::from(bit_delay_fn);
 let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
 // write "-" on Position 0
-display.write_segment_raw(&[SpecialChars::Minus], 0);
+display.write_segment_raw(SpecialChars::Minus as u8, 0);
 ```
 
 Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.
