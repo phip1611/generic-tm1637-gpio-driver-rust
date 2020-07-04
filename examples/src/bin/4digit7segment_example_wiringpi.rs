@@ -79,11 +79,11 @@ fn main() {
     // ##############################################################################
 
     // display this text over and over again
-    /*let sleep_fn = || sleep_busy_waiting(10);
+    /*let sleep_fn = || sleep_busy_waiting(SECOND);
     display_text_banner_in_loop(
         &mut tm1637display,
         // 4 spaces because we want the text to smoothly slide in and out :)
-        "    0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz    ",
+        "    0123456789 ABCDEFGHIJKLMNOPQRSTUVWXY abcdefghijklmnopqrstuvwxyz ?-_=.    ",
         &sleep_fn
     );*/
 
