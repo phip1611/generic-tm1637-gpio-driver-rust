@@ -29,6 +29,7 @@ pub mod extern_api;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use crate::mappings::{NumCharBits, UpCharBits, SpecialCharBits, LoCharBits};
+use core::intrinsics::breakpoint;
 
 //       A
 //      ---
@@ -458,11 +459,16 @@ impl TM1637Adapter {
         (self.pin_dio_mode_fn)(GpioPinMode::INPUT);
         self.bit_delay();
         let ack: GpioPinValue = (self.pin_dio_read_fn)();
-        // todo maybe wait 3-5 cycles until 0 was found to be more failsafe?!
-        if ack as u8 != 0 {
-            // ACK should be one clock with zero on data lane
-            // not possible with no_std; TODO provide debug function
-            // eprintln!("ack is not 0! Probably not a problem, tho.")
+
+        // wait a few cycles for ACK to be more fail safe
+        for _ in 0..10 {
+            if *ack as u8 == 0 { break; }
+            else {
+                // ACK should be one clock with zero on data lane
+
+                // not possible with no_std; TODO provide debug function
+                // eprintln!("ack is not 0! Probably not a problem, tho.")
+            }
         }
 
         (self.pin_dio_mode_fn)(GpioPinMode::OUTPUT);
