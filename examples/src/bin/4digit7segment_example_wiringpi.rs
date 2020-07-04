@@ -25,7 +25,7 @@ fn main() {
 
     // setup
     // 100µs should be totally save; less could work; depends on cable length and other factors
-    // high frequencies are tricky
+    // high frequencies are tricky; it even worked with zero waiting for me.. but better be safe!
     let bit_delay_fn = || sleep_busy_waiting(10);
     let bit_delay_fn = Box::from(bit_delay_fn);
     let mut tm1637display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
