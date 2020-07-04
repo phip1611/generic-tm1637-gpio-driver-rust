@@ -23,7 +23,7 @@ pub mod mappings;
 #[cfg(feature = "fourdigit7segdis")]
 pub mod fourdigit7segdis;
 // provides conditionally bindings to specific GPIO interfaces; can be activated via cargo features
-pub mod extern_api;
+pub mod gpio_api;
 
 // to use Box: we don't have std::prelude here
 use alloc::boxed::Box;
@@ -493,7 +493,7 @@ impl TM1637Adapter {
 
 #[cfg(test)]
 mod tests {
-    use crate::TM1637Adapter;
+    use super::*;
 
     #[test]
     fn test_encode_number() {

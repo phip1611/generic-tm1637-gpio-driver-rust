@@ -20,10 +20,15 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     let data = text.replace(".", " ");
     let data = TM1637Adapter::encode_string(&data);
 
+    // +1 because the upper border in a range is exclusive
+    // otherwise last char is lost!
+    let to = (data.len() - DISPLAY_COUNT) + 1;
+
     // display this text over and over again
     loop {
-        for x in 0..(data.len() - DISPLAY_COUNT) {
-            adapter.write_segments_raw(&data[x..(x + DISPLAY_COUNT)], 4, 0);
+        for x in 0..to {
+            let data_slice = &data[x..(x + DISPLAY_COUNT)];
+            adapter.write_segments_raw(data_slice, 4, 0);
             sleep_fn();
         }
     }

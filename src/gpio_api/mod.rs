@@ -7,6 +7,11 @@
 #[cfg(feature = "gpio-api-wiringpi")]
 mod wiringpi;
 #[cfg(feature = "gpio-api-wiringpi")]
-pub use super::extern_api::wiringpi::setup_wiringpi;
+pub use super::gpio_api::wiringpi::setup_wiringpi;
 
-
+// this module is only necessary/useful for testing and debugging on machines that
+// do not have an gpio interface. This way one can set breakpoints.
+#[cfg(feature = "dummy")]
+mod dummy;
+#[cfg(feature = "dummy")]
+pub use super::gpio_api::dummy::setup_dummy;

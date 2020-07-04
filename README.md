@@ -94,7 +94,7 @@ display.write_segment_raw(SpecialChars::Minus as u8, 0);
 Cargo.toml:
 
 [dependencies.tm1637-gpio-driver]
-version = "1.1.0"
+version = "<insert latest version>"
 features = ["gpio-api-wiringpi"]
 
 

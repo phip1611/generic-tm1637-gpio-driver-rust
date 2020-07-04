@@ -1,6 +1,6 @@
 [package]
 name = "tm1637-gpio-driver"
-version = "1.1.4"
+version = "1.1.5"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
@@ -20,17 +20,24 @@ documentation = "https://docs.rs/tm1637-gpio-driver/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+##################################################
+
 [features]
 # default features:
-default = ["fourdigit7segdis"]
+default = ["fourdigit7segdis", "dummy"]
 
 # no dependencies; just used for conditional compilation
 fourdigit7segdis = []
+
+# only useful for debugging/testing; for example if you are developing on your mac
+# and want to breakpoint into a function; wiringpi won't work on Mac for example
+dummy = []
 
 # "gpio-api-${crate.name}"
 # mapping from feature to its dependencies
 gpio-api-wiringpi = ["wiringpi"]
 
+##################################################
+
 [dependencies]
-#wiringpi = { version = "*", optional = true }
 wiringpi = { version = "0.2.4", optional = true }

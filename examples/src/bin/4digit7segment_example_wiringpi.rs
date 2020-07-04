@@ -1,6 +1,6 @@
 use chrono::prelude::*;
 use std::time::{Duration, Instant};
-use tm1637_gpio_driver::extern_api::setup_wiringpi;
+use tm1637_gpio_driver::gpio_api::setup_wiringpi;
 use tm1637_gpio_driver::{TM1637Adapter, DisplayState, Brightness};
 use tm1637_gpio_driver::mappings::SpecialCharBits;
 use tm1637_gpio_driver::fourdigit7segdis::{display_current_time_in_loop, display_stopwatch, STOPWATCH_MAX};
