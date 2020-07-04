@@ -1,3 +1,6 @@
+# 1.1.3 
+More small code improvements + comments.
+
 # 1.1.2
 Better comments and documentation.
 
