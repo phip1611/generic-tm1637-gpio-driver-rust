@@ -29,7 +29,6 @@ pub mod extern_api;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use crate::mappings::{NumCharBits, UpCharBits, SpecialCharBits, LoCharBits};
-use core::intrinsics::breakpoint;
 
 //       A
 //      ---
