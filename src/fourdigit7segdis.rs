@@ -2,6 +2,7 @@
 //! display by AZDelivery. You can use them but you don't have to. They show how the driver
 //! works/could be used.
 
+/// We have 4 displays so we can display 4 digits.
 pub const DISPLAY_COUNT: usize = 4;
 
 use crate::{TM1637Adapter, DisplayState, Brightness};
@@ -63,7 +64,7 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
 pub const STOPWATCH_MAX: u16 = 10_000;
 
 /// Starts a stopwatch aka counter from 0 to 9999.
-/// You need to provide a sleep_fn that waits 1s (sets the frequency to 1Hz).
+/// You need to provide a sleep_fn that waits 1s (for stopwatch).
 pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u16, blink: bool) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);

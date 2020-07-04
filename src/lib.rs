@@ -11,9 +11,8 @@
 
 //! Zero-dependency generic GPIO driver for TM1637.
 //! With this driver you can control for example the 4-digit 7-segment display from AZ-Delivery.
-//! This is not dependent on a specific GPIO interface.
+//! This is not dependent on a specific GPIO library.
 //! This library was tested on a Raspberry Pi with its GPIO interface.
-//! This library doesn't support all features of TM1637 (yet).
 //! Feel free to contribute. :)
 
 // rust core library; no external crate; needed because no_std

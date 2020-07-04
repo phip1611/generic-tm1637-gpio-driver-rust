@@ -1,3 +1,6 @@
+# 1.1.2
+Better comments and documentation.
+
 # 1.1.1
 Replaced `thread::sleep` in examples by a busy waiting approach for way better latency!
 

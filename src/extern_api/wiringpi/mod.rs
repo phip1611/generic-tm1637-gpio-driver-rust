@@ -1,3 +1,9 @@
+//! Provides a setup function for the TM1637Adapter using the "wiringpi" crate.
+//! Note that this comes with all restrictions that wiringpi has. This means
+//! wiringpi must be installed on your Pi and you can only use this on a Raspberry Pi.
+//!
+//! This feature must be activated in your Cargo.toml of you want to use them.
+
 use alloc::rc::Rc;
 use wiringpi::WiringPi;
 use wiringpi::pin::Value as WiringPiVal;
