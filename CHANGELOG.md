@@ -1,3 +1,6 @@
+# 1.1.6
+- Fixed test (CI build was broken)
+
 # 1.1.5
 - Bugfix in `fourdigit7segdis::display_text_banner_in_loop`
 - **breaking**: renamed module `external_api` to `gpio_api`

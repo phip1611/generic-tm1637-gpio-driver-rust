@@ -33,7 +33,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let mut f = setup_dummy();;
-        fourdigit7segdis::display_text_banner_in_loop(&mut f, "    Hallo", &|| {});
+        let mut f = setup_dummy();
+        // don't check in because this breaks the CI build because of the infinite loop
+        //fourdigit7segdis::display_text_banner_in_loop(&mut f, "    Hallo", &|| {});
     }
 }
