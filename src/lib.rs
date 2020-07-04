@@ -298,12 +298,16 @@ impl TM1637Adapter {
             // CLK low
             (self.pin_clock_write_fn)(GpioPinValue::LOW);
             // Set data bit (we send one bit of our byte per iteration)
+            // LSF (least significant bit) first
+            // => target has (probably?) shift register => this way the byte has the
+            // correct order on the target
             (self.pin_dio_write_fn)(GpioPinValue::from(data & 0x01));
             self.bit_delay();
 
             // CLK high
             (self.pin_clock_write_fn)(GpioPinValue::HIGH);
             self.bit_delay();
+
             // shift to next bit
             data = data >> 1;
         }
