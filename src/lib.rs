@@ -56,6 +56,7 @@ pub enum GpioPinMode {
 
 /// The value of a GPIO pin.
 #[repr(u8)]
+#[derive(Clone, Copy)]
 pub enum GpioPinValue {
     /// Low.
     LOW,
@@ -466,7 +467,7 @@ impl TM1637Adapter {
 
         // wait a few cycles for ACK to be more fail safe
         for _ in 0..10 {
-            if *ack as u8 == 0 { break; }
+            if ack as u8 == 0 { break; }
             else {
                 // ACK should be one clock with zero on data lane
 
