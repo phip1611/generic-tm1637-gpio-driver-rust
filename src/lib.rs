@@ -296,11 +296,8 @@ impl TM1637Adapter {
         for _ in 0..8 {
             // CLK low
             (self.pin_clock_write_fn)(GpioPinValue::LOW);
-            self.bit_delay();
-
             // Set data bit (we send one bit of our byte per iteration)
             (self.pin_dio_write_fn)(GpioPinValue::from(data & 0x01));
-
             self.bit_delay();
 
             // CLK high
