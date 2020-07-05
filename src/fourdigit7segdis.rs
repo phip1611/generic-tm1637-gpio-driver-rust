@@ -108,11 +108,14 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
 
     // blinking with just zeros to show that timer is done
     for i in 0..4 {
-        let mut data = [TM1637Adapter::encode_digit(0); 4];
+        let data;
         if i % 2 == 0 {
-            data[1] |= SegmentBits::SegPoint as u8;
+            data = [0; 4];
+        } else {
+            data = [TM1637Adapter::encode_digit(0); 4];
         }
         adapter.write_segments_raw(&data, 4, 0);
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
     }
+    adapter.clear();
 }
