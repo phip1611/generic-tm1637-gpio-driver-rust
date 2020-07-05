@@ -44,16 +44,6 @@ use crate::mappings::{NumCharBits, UpCharBits, SpecialCharBits, LoCharBits};
 /// 7-segment display from AzDelivery only uses 4.
 pub const DISPLAY_REGISTERS_COUNT: usize = 6;
 
-
-/// Mode of GPIO Pins.
-#[repr(u8)]
-pub enum GpioPinMode {
-    /// Input-Pin.
-    INPUT,
-    /// Output-Pin.
-    OUTPUT,
-}
-
 /// The value of a GPIO pin.
 #[repr(u8)]
 #[derive(Clone, Copy)]
@@ -80,8 +70,6 @@ impl From<u8> for GpioPinValue {
 pub struct TM1637Adapter {
     /// Function that writes the value on the GPIO pin that acts as the clock.
     pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
-    /// Function that changes the mode of the data in and out pin.
-    pin_dio_mode_fn: Box<dyn Fn(GpioPinMode)>,
     /// Function that writes the value on the GPIO pin that acts as data in and out.
     pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
     /// Function that reads from the data in and out pin.
@@ -171,22 +159,17 @@ pub enum ISA {
 }
 
 impl TM1637Adapter {
-    pub fn new(pin_clock_mode_fn: Box<dyn Fn(GpioPinMode)>,
-               pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
-               pin_dio_mode_fn: Box<dyn Fn(GpioPinMode)>,
+    pub fn new(pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,
                bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {
 
         // assume both are already output pins - this is the contract that needs to be fulfilled!
-        (pin_clock_mode_fn)(GpioPinMode::OUTPUT);
-        (pin_dio_mode_fn)(GpioPinMode::OUTPUT);
         (pin_clock_write_fn)(GpioPinValue::LOW);
         (pin_dio_write_fn)(GpioPinValue::LOW);
 
         TM1637Adapter {
             pin_clock_write_fn,
-            pin_dio_mode_fn,
             pin_dio_write_fn,
             pin_dio_read_fn,
             bit_delay_fn,
@@ -461,9 +444,6 @@ impl TM1637Adapter {
         self.bit_delay();
         (self.pin_clock_write_fn)(GpioPinValue::HIGH);
 
-        // prepare read
-        (self.pin_dio_mode_fn)(GpioPinMode::INPUT);
-        self.bit_delay();
         let ack: GpioPinValue = (self.pin_dio_read_fn)();
 
         // wait a few cycles for ACK to be more fail safe
@@ -477,7 +457,6 @@ impl TM1637Adapter {
             }
         }
 
-        (self.pin_dio_mode_fn)(GpioPinMode::OUTPUT);
         (self.pin_clock_write_fn)(GpioPinValue::LOW);
         (self.pin_dio_write_fn)(GpioPinValue::LOW);
         self.bit_delay();
