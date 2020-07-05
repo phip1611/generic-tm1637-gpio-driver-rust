@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use tm1637_gpio_driver::gpio_api::setup_wiringpi;
 use tm1637_gpio_driver::{TM1637Adapter, DisplayState, Brightness};
 use tm1637_gpio_driver::mappings::SpecialCharBits;
-use tm1637_gpio_driver::fourdigit7segdis::{display_current_time_in_loop, display_stopwatch, STOPWATCH_MAX};
+use tm1637_gpio_driver::fourdigit7segdis::{display_current_time_in_loop, display_stopwatch, STOPWATCH_MAX, display_timer};
 use std::ops::Add;
 
 // We have 4 displays
@@ -88,6 +88,9 @@ fn main() {
     );*/
 
     // ##############################################################################
+
+    // timer from 10 to 0 in 10 seconds
+    display_timer(&mut tm1637display, &|| sleep_busy_waiting(SECOND), 10, true);
 
     // stopwatch from 0 to 10 in 10 seconds
     display_stopwatch(&mut tm1637display, &|| sleep_busy_waiting(SECOND), 10, true);
