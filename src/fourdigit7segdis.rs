@@ -99,7 +99,7 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
     // 0 to 9999
     for i in 0..(from_val + 1) {
         let i = from_val - i;
-        let mut data = TM1637Adapter::encode_number(i);
+        let data = TM1637Adapter::encode_number(i);
         adapter.write_segments_raw(&data, 4, 0);
         show_dot = !show_dot;
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
