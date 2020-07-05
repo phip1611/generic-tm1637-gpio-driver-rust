@@ -1,3 +1,7 @@
+# 1.2.2
+**breaking** Removed "n" parameter from `write_segments_raw` because Rust can figure out array length by itself.
+(I know that the version number indicates it's a minor update but this is such a small thing..)
+
 # 1.2.1
 - bugfix in function `fourdigit7segdis::display_timer`
 

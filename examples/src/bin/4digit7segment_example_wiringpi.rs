@@ -37,7 +37,7 @@ fn main() {
         TM1637Adapter::encode_digit(3),
         TM1637Adapter::encode_digit(4),
     ];
-    tm1637display.write_segments_raw(&data, DISPLAYS_COUNT as u8, 0);
+    tm1637display.write_segments_raw(&data, 0);
     sleep_busy_waiting(SECOND);
 
     // ##############################################################################

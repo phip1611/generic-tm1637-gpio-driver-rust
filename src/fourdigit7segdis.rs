@@ -28,7 +28,7 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     loop {
         for x in 0..to {
             let data_slice = &data[x..(x + DISPLAY_COUNT)];
-            adapter.write_segments_raw(data_slice, 4, 0);
+            adapter.write_segments_raw(data_slice,  0);
             sleep_fn();
         }
     }
@@ -57,7 +57,7 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
             data[1] = data[1] | SegmentBits::SegPoint as u8;
         }
 
-        adapter.write_segments_raw(&data, 4, 0);
+        adapter.write_segments_raw(&data, 0);
 
         (tick_fn)();
 
@@ -81,7 +81,7 @@ pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u
         if blink && show_dot {
             data[1] |= SegmentBits::SegPoint as u8;
         }
-        adapter.write_segments_raw(&data, 4, 0);
+        adapter.write_segments_raw(&data, 0);
         show_dot = !show_dot;
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
     }
@@ -100,7 +100,7 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
     for i in 0..(from_val + 1) {
         let i = from_val - i;
         let data = TM1637Adapter::encode_number(i);
-        adapter.write_segments_raw(&data, 4, 0);
+        adapter.write_segments_raw(&data, 0);
         show_dot = !show_dot;
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
     }
@@ -113,7 +113,7 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
         } else {
             data = [TM1637Adapter::encode_digit(0); 4];
         }
-        adapter.write_segments_raw(&data, 4, 0);
+        adapter.write_segments_raw(&data, 0);
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
     }
     adapter.clear();

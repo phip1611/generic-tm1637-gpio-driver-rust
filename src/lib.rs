@@ -15,7 +15,8 @@
 //! This library was tested on a Raspberry Pi with its GPIO interface.
 //! Feel free to contribute. :)
 
-// rust core library; no external crate; needed because no_std
+// from rust core library; no "external crate" in the manner that this is no crates.io dependency;
+// needed because no_std
 extern crate alloc;
 
 // Import our enums/arrays for the symbol mappings to the 7 segment display
@@ -222,7 +223,8 @@ impl TM1637Adapter {
     ///         written, address is adjusted internally via auto increment.
     ///         Usually this is 0, if you want to write data to all 7 segment
     ///         displays.
-    pub fn write_segments_raw(&self, segments: &[u8], mut n: u8, pos: u8) {
+    pub fn write_segments_raw(&self, segments: &[u8], pos: u8) {
+        let mut n = segments.len() as u8;
         // beeing a little bit more failure tolerant
         if n == 0 { return; } // nothing to do
         let pos = pos % DISPLAY_REGISTERS_COUNT as u8; // only valid positions/registers
@@ -272,7 +274,7 @@ impl TM1637Adapter {
     /// a specific position of the display.
     /// Position is 0, 1, 2, or 3.
     pub fn write_segment_raw(&self, segments: u8, position: u8) {
-        self.write_segments_raw(&[segments], 1, position)
+        self.write_segments_raw(&[segments], position)
     }
 
     /// Send command that sets the display state on the micro controller.
@@ -286,7 +288,7 @@ impl TM1637Adapter {
     /// Clears the display.
     pub fn clear(&self) {
         // begin at position 0 and write 0 into display registers 0 to 5
-        self.write_segments_raw(&[0, 0, 0, 0, 0, 0], 6, 0);
+        self.write_segments_raw(&[0, 0, 0, 0, 0, 0], 0);
     }
 
     /// Writes a byte bit by bit and waits for the acknowledge.
