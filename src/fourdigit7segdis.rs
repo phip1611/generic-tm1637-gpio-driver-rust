@@ -88,8 +88,10 @@ pub fn display_stopwatch(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), to: u
 }
 
 /// Starts a timer from x to 0. Needs a sleep_fn (probably one that sleeps for one second / 1Hz).
-/// The blink-param describes whether the double point should blink when the value decreases.
-pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val: u16, blink: bool) {
+/// Displays pure seconds. No minutes:seconds.
+// don't to blink here, because it would look like "mins:secs" which is not true. In this case this
+// is a pure seconds timer.
+pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val: u16) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
 
@@ -98,9 +100,6 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
     for i in 0..(from_val + 1) {
         let i = from_val - i;
         let mut data = TM1637Adapter::encode_number(i);
-        if i != 0 && blink && show_dot {
-            data[1] |= SegmentBits::SegPoint as u8;
-        }
         adapter.write_segments_raw(&data, 4, 0);
         show_dot = !show_dot;
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency

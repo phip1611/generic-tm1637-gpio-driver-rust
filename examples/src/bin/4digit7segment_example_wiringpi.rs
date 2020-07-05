@@ -90,7 +90,7 @@ fn main() {
     // ##############################################################################
 
     // timer from 10 to 0 in 10 seconds
-    display_timer(&mut tm1637display, &|| sleep_busy_waiting(SECOND), 10, true);
+    display_timer(&mut tm1637display, &|| sleep_busy_waiting(SECOND), 10);
 
     // stopwatch from 0 to 10 in 10 seconds
     display_stopwatch(&mut tm1637display, &|| sleep_busy_waiting(SECOND), 10, true);

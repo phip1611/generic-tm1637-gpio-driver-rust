@@ -1,3 +1,6 @@
+# 1.2.1
+- bugfix in function `fourdigit7segdis::display_timer`
+
 # 1.2.0
 - added function `fourdigit7segdis::display_timer`
 
