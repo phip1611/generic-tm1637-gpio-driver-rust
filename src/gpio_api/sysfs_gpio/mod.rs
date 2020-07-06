@@ -12,6 +12,21 @@ use sysfs_gpio::{Pin, Direction};
 pub fn setup_sysfs_gpio(clk_pin: u64,
                       dio_pin: u64,
                       bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {
+
+    let pin = Pin::new(clk_pin);
+    pin.with_exported(|| {
+        pin.set_direction(Direction::Out).unwrap();
+        pin.set_value(0).unwrap();
+        Ok(())
+    }).unwrap();
+    let pin = Pin::new(dio_pin);
+    pin.with_exported(|| {
+        pin.set_direction(Direction::Out).unwrap();
+        pin.set_value(0).unwrap();
+        Ok(())
+    }).unwrap();
+    (bit_delay_fn)();
+
     // set up all the wrapper functions that connects the tm1637-driver with wiringpi
     let pin_clock_write_fn = pin_write_fn_factory(clk_pin);
     let pin_dio_write_fn = pin_write_fn_factory(dio_pin);
