@@ -4,7 +4,6 @@
 //!
 //! This feature must be activated in your Cargo.toml of you want to use it.
 
-use alloc::rc::Rc;
 use alloc::boxed::Box;
 use crate::{GpioPinValue, TM1637Adapter};
 use sysfs_gpio::{Pin, Direction};
@@ -35,7 +34,7 @@ fn pin_write_fn_factory(pin_num: u64) -> Box<dyn Fn(GpioPinValue)> {
         let pin = Pin::new(pin_num);
         pin.export().unwrap();
         pin.set_direction(Direction::Out).unwrap();
-        pin.set_value(bit as u8);
+        pin.set_value(bit as u8).unwrap();
     })
 }
 
