@@ -43,12 +43,13 @@ fn pin_write_fn_factory(pin_num: u64) -> Box<dyn Fn(GpioPinValue)> {
 fn pin_read_fn_factory(pin_num: u64) -> Box<dyn Fn() -> GpioPinValue> {
     Box::from(move || {
         let pin = Pin::new(pin_num);
-        let res;
+        let mut res= 255;
         pin.with_exported(|| {
             pin.set_direction(Direction::In).unwrap();
             res = pin.get_value().unwrap();
             Ok(())
         }).unwrap();
+        assert_ne!(res, 255);
 
         return if res == 0 { GpioPinValue::LOW } else { GpioPinValue::HIGH }
     })
