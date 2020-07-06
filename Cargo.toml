@@ -37,7 +37,10 @@ dummy = []
 # mapping from feature to its dependencies
 gpio-api-wiringpi = ["wiringpi"]
 
+gpio-api-sysfs_gpio = ["sysfs_gpio"]
+
 ##################################################
 
 [dependencies]
 wiringpi = { version = "0.2.4", optional = true }
+sysfs_gpio = { version = "0.5.4", optional = true }

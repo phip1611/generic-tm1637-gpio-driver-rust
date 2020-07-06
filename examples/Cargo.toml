@@ -15,7 +15,7 @@ path = "../"
 # we activate the wiringpi feature
 # we also could initialize the driver manually with wiringpi tho with the
 # same or similar code that setup_wiringpi() uses :)
-features = ["gpio-api-wiringpi"]
+features = ["gpio-api-wiringpi", "gpio-api-sysfs_gpio"]
 
 [dependencies]
 chrono = "0.4.12"
