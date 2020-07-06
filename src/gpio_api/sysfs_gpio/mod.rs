@@ -1,7 +1,8 @@
 //! Provides a setup function for the TM1637Adapter using the "sysfs_gpio" crate.
 //! Note that sysfs interface is going to be deprecated in linux kernel somewhere in 2020.
+//! Note that this requires sudo on raspberry pi even if you are part of the "gpio" group!
 //!
-//! This feature must be activated in your Cargo.toml of you want to use t.
+//! This feature must be activated in your Cargo.toml of you want to use it.
 
 use alloc::rc::Rc;
 use alloc::boxed::Box;

@@ -2,7 +2,7 @@
 //! Note that this comes with all restrictions that wiringpi has. This means
 //! wiringpi must be installed on your Pi and you can only use this on a Raspberry Pi.
 //!
-//! This feature must be activated in your Cargo.toml of you want to use them.
+//! This feature must be activated in your Cargo.toml of you want to use it.
 
 use alloc::rc::Rc;
 use wiringpi::WiringPi;
