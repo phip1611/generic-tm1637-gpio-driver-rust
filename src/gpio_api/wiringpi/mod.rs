@@ -21,7 +21,7 @@ pub fn setup_wiringpi(clk_pin: u16,
     let pin_clock_write_fn = pin_write_fn_factory(clk_pin, gpio.clone());
     let pin_dio_write_fn = pin_write_fn_factory(dio_pin, gpio.clone());
     let pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue> = pin_read_fn_factory(dio_pin, gpio.clone());
-    // set up delay-fn: sleep() is not available in lib because it is zero dependency
+    // set up delay-fn: sleep() is not available in our lib because we use no-std
 
     // pass all wrapper functions to the adapter.
     TM1637Adapter::new(
