@@ -13,20 +13,6 @@ pub fn setup_sysfs_gpio(clk_pin: u64,
                       dio_pin: u64,
                       bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {
 
-    let pin = Pin::new(clk_pin);
-    pin.with_exported(|| {
-        pin.set_direction(Direction::Out).unwrap();
-        pin.set_value(0).unwrap();
-        Ok(())
-    }).unwrap();
-    let pin = Pin::new(dio_pin);
-    pin.with_exported(|| {
-        pin.set_direction(Direction::Out).unwrap();
-        pin.set_value(0).unwrap();
-        Ok(())
-    }).unwrap();
-    (bit_delay_fn)();
-
     // set up all the wrapper functions that connects the tm1637-driver with wiringpi
     let pin_clock_write_fn = pin_write_fn_factory(clk_pin);
     let pin_dio_write_fn = pin_write_fn_factory(dio_pin);
@@ -46,11 +32,9 @@ pub fn setup_sysfs_gpio(clk_pin: u64,
 fn pin_write_fn_factory(pin_num: u64) -> Box<dyn Fn(GpioPinValue)> {
     Box::from(move |bit| {
         let pin = Pin::new(pin_num);
-        pin.with_exported(|| {
-            pin.set_direction(Direction::Out).unwrap();
-            pin.set_value(bit as u8).unwrap();
-            Ok(())
-        }).unwrap();
+        pin.export().unwrap();
+        pin.set_direction(Direction::Out).unwrap();
+        pin.set_value(bit as u8);
     })
 }
 
@@ -58,14 +42,9 @@ fn pin_write_fn_factory(pin_num: u64) -> Box<dyn Fn(GpioPinValue)> {
 fn pin_read_fn_factory(pin_num: u64) -> Box<dyn Fn() -> GpioPinValue> {
     Box::from(move || {
         let pin = Pin::new(pin_num);
-        let mut res= 255;
-        pin.with_exported(|| {
-            pin.set_direction(Direction::In).unwrap();
-            res = pin.get_value().unwrap();
-            Ok(())
-        }).unwrap();
-        assert_ne!(res, 255);
-
+        pin.export().unwrap();
+        pin.set_direction(Direction::In).unwrap();
+        let res = pin.get_value().unwrap();
         return if res == 0 { GpioPinValue::LOW } else { GpioPinValue::HIGH }
     })
 }
