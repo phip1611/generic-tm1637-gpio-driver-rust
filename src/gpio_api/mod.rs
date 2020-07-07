@@ -4,11 +4,20 @@
 //!
 //! These features must be activated in your Cargo.toml of you want to use them.
 
+// uses "wiringpi"-crate
 #[cfg(feature = "gpio-api-wiringpi")]
 mod wiringpi;
 #[cfg(feature = "gpio-api-wiringpi")]
 pub use super::gpio_api::wiringpi::setup_wiringpi;
 
+// uses "gpio"-crate. This uses sysfs, which will be deprecated in linux kernel in 2020
+// see https://crates.io/crates/gpio-cdev
+#[cfg(feature = "gpio-api-gpio")]
+mod gpio;
+#[cfg(feature = "gpio-api-gpio")]
+pub use super::gpio_api::gpio::setup_gpio;
+
+// uses "sysfs_gpio"-crate
 #[cfg(feature = "gpio-api-sysfs_gpio")]
 mod sysfs_gpio;
 #[cfg(feature = "gpio-api-sysfs_gpio")]

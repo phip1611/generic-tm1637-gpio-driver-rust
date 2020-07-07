@@ -42,6 +42,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8be18de09a56b60ed0edf84bc9df007e30040691af7acd1c41874faac5895bfb"
 
 [[package]]
+name = "gpio"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fe6783270536547ac473c9d2ae5a7e0e715ea43f29004ced47fbd1c1372d2c7"
+
+[[package]]
 name = "libc"
 version = "0.2.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -110,6 +116,7 @@ dependencies = [
 name = "tm1637-gpio-driver"
 version = "1.2.2"
 dependencies = [
+ "gpio",
  "sysfs_gpio",
  "wiringpi",
 ]
