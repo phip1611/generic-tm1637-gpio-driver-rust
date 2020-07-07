@@ -109,8 +109,12 @@ fn pin_read_fn_factory(pin: Rc<RefCell<Option<PinKind>>>, pin_num: u16) -> Box<d
         PinKind::out_to_in(&pin, pin_num);
 
         // read value
-        let mut res = pin.borrow_mut();
-        let res = res.as_mut().unwrap().in_pin().read_value().unwrap();
+        let res = {
+            // this is a block so that "res" is dropped before we call in_to_out again!
+
+            let mut res = pin.borrow_mut();
+            res.as_mut().unwrap().in_pin().read_value().unwrap()
+        };
 
         // we drop/unexport the pin in in-mode
         // then it can be an output pin again
