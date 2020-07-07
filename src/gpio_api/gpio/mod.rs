@@ -43,6 +43,18 @@ impl PinKind {
     fn out_pin(&mut self) -> &mut SysFsGpioOutput {
         if let PinKind::Out(ref mut pin) = self { pin } else { panic!("Not an output pin!") }
     }
+
+    fn in_to_out(pin: &Rc<RefCell<Option<PinKind>>>, pin_num: u16) {
+        // Reset old Pin due to drop
+        pin.replace(None);
+        pin.replace(Some(PinKind::new_out(pin_num)));
+    }
+
+    fn out_to_in(pin: &Rc<RefCell<Option<PinKind>>>, pin_num: u16) {
+        // Reset old Pin due to drop
+        pin.replace(None);
+        pin.replace(Some(PinKind::new_in(pin_num)));
+    }
 }
 
 /// Sets up the TM1637 Adapter using "gpio"-crate (that uses sysfs) as GPIO interface.
@@ -56,11 +68,11 @@ pub fn setup_gpio(clk_pin: u16,
     // e.g. "1" + unexport => 0 instead of it stays a 1
 
     let clk_pin = PinKind::new_out(clk_pin);
-    let clk_pin  = Rc::from(RefCell::from(clk_pin));
+    let clk_pin  = Rc::from(RefCell::from(Option::from(clk_pin)));
 
     let dio_pin_num = dio_pin;
     let dio_pin = PinKind::new_out(dio_pin);
-    let dio_pin = Rc::from(RefCell::from(dio_pin));
+    let dio_pin = Rc::from(RefCell::from(Option::from(dio_pin)));
 
     // set up all the wrapper functions that connects the tm1637-driver with wiringpi
     let pin_clock_write_fn = pin_write_fn_factory(clk_pin);
@@ -78,9 +90,10 @@ pub fn setup_gpio(clk_pin: u16,
 }
 
 /// Creates a function/closure for the given pin that changes the value of the pin.
-fn pin_write_fn_factory(pin: Rc<RefCell<PinKind>>) -> Box<dyn Fn(GpioPinValue)> {
+fn pin_write_fn_factory(pin: Rc<RefCell<Option<PinKind>>>) -> Box<dyn Fn(GpioPinValue)> {
     Box::from(move |bit| {
         let mut pin = pin.borrow_mut();
+        let pin = pin.as_mut().unwrap();
         let pin = pin.out_pin();
         pin.set_value(bit as u8).unwrap();
     })
@@ -89,19 +102,19 @@ fn pin_write_fn_factory(pin: Rc<RefCell<PinKind>>) -> Box<dyn Fn(GpioPinValue)> 
 /// Creates a function/closure for the given pin that reads its value in the moment of invocation.
 /// It fulfills the contract that the pin will be an out pin after this function is done!
 /// Out-Pins are the default for this interface.
-fn pin_read_fn_factory(pin: Rc<RefCell<PinKind>>, pin_num: u16) -> Box<dyn Fn() -> GpioPinValue> {
+fn pin_read_fn_factory(pin: Rc<RefCell<Option<PinKind>>>, pin_num: u16) -> Box<dyn Fn() -> GpioPinValue> {
     Box::from(move || {
-
-        // unexport export pin due to drop; it's now an input pin
-        pin.replace(PinKind::new_in(pin_num));
+        // we drop/unexport the pin in out-mode
+        // then it can be an input pin
+        PinKind::out_to_in(&pin, pin_num);
 
         // read value
-        let res = pin.borrow_mut().in_pin().read_value().unwrap();
+        let mut res = pin.borrow_mut();
+        let res = res.as_mut().unwrap().in_pin().read_value().unwrap();
 
-        pin.replace(PinKind::new_out(pin_num));
-
-        // input pin again to output
-        // pin.replace(PinKind::Out(SysFsGpioOutput::open(dio_pin).expect("gpio sysfs: could not open pin")));
+        // we drop/unexport the pin in in-mode
+        // then it can be an output pin again
+        PinKind::in_to_out(&pin, pin_num);
 
         return if let GpioValue::High = res { GpioPinValue::HIGH } else { GpioPinValue::LOW }
     })
