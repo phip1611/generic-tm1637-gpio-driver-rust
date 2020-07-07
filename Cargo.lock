@@ -62,7 +62,7 @@ dependencies = [
 
 [[package]]
 name = "tm1637-gpio-driver"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "gpio 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "gpio-cdev 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",

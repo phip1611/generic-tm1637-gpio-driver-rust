@@ -1,3 +1,6 @@
+# 2.0.2
+Crate feature `gpio-api-gpio_cdev` is now a default feature.
+
 # 2.0.1
 Fixed license in Cargo.toml.
 

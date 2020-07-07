@@ -9,9 +9,8 @@ interface/library on your own.
 ```
 Cargo.toml:
 
-[dependencies.tm1637-gpio-driver]
-version = "<insert latest version>"
-features = ["gpio-api-gpio_cdev"]
+[dependencies]
+tm1637-gpio-driver = "<insert latest version>"
 
 ------------------------
 

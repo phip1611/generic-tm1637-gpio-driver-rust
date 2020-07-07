@@ -125,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "tm1637-gpio-driver"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "gpio",
  "gpio-cdev",

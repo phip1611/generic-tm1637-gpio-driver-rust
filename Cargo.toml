@@ -1,6 +1,6 @@
 [package]
 name = "tm1637-gpio-driver"
-version = "2.0.1"
+version = "2.0.2"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
@@ -24,7 +24,8 @@ documentation = "https://docs.rs/tm1637-gpio-driver/"
 
 [features]
 # default features:
-default = ["fourdigit7segdis", "dummy"]
+# "gpio_cdev" is recommended => because of this it's a default feature
+default = ["fourdigit7segdis", "dummy", "gpio-api-gpio_cdev"]
 
 # no dependencies; just used for conditional compilation
 fourdigit7segdis = []
