@@ -3,9 +3,46 @@
 Zero-dependency generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. 
 It is used in the 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
 Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
-interface/library on your own. If you activate the crate feature `gpio-api-wiringpi` then you can easily
-use wiring Pi. But you can also set it up on your own. Just look into the code to see how it is done.
-_More setup functions for GPIO APIs could be integrated in the future._
+interface/library on your own. 
+
+# TL;DR: minimal setup
+```
+Cargo.toml:
+
+[dependencies.tm1637-gpio-driver]
+version = "<insert latest version>"
+features = ["gpio-api-gpio_cdev"]
+
+------------------------
+
+code.rs:
+
+use std::thread::sleep;
+use std::time::Duration;
+use tm1637_gpio_driver::gpio_api::setup_gpio_cdev;
+use tm1637_gpio_driver::TM1637Adapter;
+
+// example that definitely works on Raspberry Pi
+fn main() {
+    // use any GPIO pin you want. This is the number of the pin on the board.
+    let (clk_pin, dio_pin) = (18, 23);
+
+    let bit_delay_fn = Box::from(|| sleep(Duration::from_micros(10)));
+    let tm1637display = setup_gpio_cdev(clk_pin, dio_pin, bit_delay_fn, "/dev/gpiochip0");
+
+    // display "1 2 3 4"
+    let data: [u8; 4] = [
+        TM1637Adapter::encode_digit(1),
+        TM1637Adapter::encode_digit(2),
+        TM1637Adapter::encode_digit(3),
+        TM1637Adapter::encode_digit(4),
+    ];
+    tm1637display.write_segments_raw(&data, 0);
+}
+```
+
+---
+
  
 This crate is `#[no_std]` An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
 
@@ -35,85 +72,36 @@ You can find code examples in the [github repository](https://github.com/phip161
 
 My driver/library is not dependent on a specific GPIO interface.
 You can use [crates.io: wiringpi](https://crates.io/crates/wiringpi) or [crates.io: gpio](https://crates.io/crates/gpio)
-for example. I tested both on my Raspberry Pi. My `TM1637Adapter` needs functions/closures 
+for example. I strongly recommend [crates.io: gpio_cdev](https://crates.io/crates/gpio_cdev).
+I tested them on my Raspberry Pi. My `TM1637Adapter` needs functions/closures 
 as parameters. These functions are wrappers to write High/Low to the desired Pins.
 
 There are also utility functions on top of the driver in the module `fourdigit7segdis` for the 4-digit
-7-segment display. You can use them, learn from them or write your own functions on top of the driver.
+7-segment display. You can use them, learn from them or just write your own functions on top of the driver.
 
 **To add this driver to your project just add the [crate](https://crates.io/crates/tm1637-gpio-driver) to your Rust project.**
 
-## Minimal Code (manual setup)
-```
-Cargo.toml:
-[dependencies]
-tm1637-gpio-driver = "1.1.0"
-
--------------
-
-code.rs: 
-
-// pass all wrapper functions to the adapter.
-// wrapper functions are the glue between your GPIO interface and
-// my adapter/lib/driver. See the examples on github how to create them!
-// It's quite ease :)
-
-let display = TM1637Adapter::new(
-    // allows the adapter to change the mode of the clock pin
-    pin_clock_mode_fn,
-
-    // allows the adapter to write High/Low to clock pin
-    pin_clock_write_fn,
-
-    // allows the adapter to change the mode of the dio (data input outut) pin
-    pin_dio_mode_fn,
-
-    // allows the adapter to write High/Low to DIO pin
-    pin_dio_write_fn,
-
-    // allows the read the DIO pin
-    pin_dio_read_fn,
-
-    // function that sleeps for example 10µs when it's invoked.
-    // because the driver uses no-std it can't sleep by itself 
-    // we need this to actually have the data signal on the wires 
-    // (high to low and vice versa has a small delay of a few nano or micro seconds)
-    bit_delay_fn,
-);
-
-// default settings
-// display.set_display_state(DisplayState::ON);
-// display.set_brightness(Brightness::L7);
-
-// write "-" on Position 0
-display.write_segment_raw(SpecialChars::Minus as u8, 0);
-```
-
-## Minimal code (using built-in feature "gpio-api-wiringpi")
-```
-Cargo.toml:
-
-[dependencies.tm1637-gpio-driver]
-version = "<insert latest version>"
-features = ["gpio-api-wiringpi"]
-
-
--------------
-
-code.rs:
-
-use tm1637_gpio_driver::extern_api::setup_wiringpi;
-use std::thread::sleep;
-use std::time::Duration;
-
-let bit_delay_fn = || sleep(Duration::from_micros(100));
-let bit_delay_fn = Box::from(bit_delay_fn);
-let mut display = setup_wiringpi(clk_pin, dio_pin, bit_delay_fn);
-// write "-" on Position 0
-display.write_segment_raw(SpecialChars::Minus as u8, 0);
-```
-
-*Note that with many GPIO crates/libs you probably loose `#[no-std]`-compliance.*
+##### Supported GPIO interfaces/libs/crates
+As I already said it's independent. But I provide several setup functions in my driver.
+To use them activate on of the features in your Cargo.toml:
+  - `gpio-api-gpio_cdev`
+    - provides a setup function for the TM1637Adapter that uses "gpio_cdev"-crate as GPIO interface
+    - `tm1637_gpio_driver::gpio_cdev::setup_gpio_cdev()`
+    - this uses the character device driver-based api/interface in the Linux kernel
+    - **This is the RECOMMENDED, modern way!** Sysfs is deprecated
+  - `gpio-api-gpio`
+    - provides a setup function for the TM1637Adapter that uses "gpio"-crate as GPIO interface
+    - `tm1637_gpio_driver::gpio_api::setup_gpio()`
+    - this uses the "sysfs"-Interface which probably requires root/sudo when executed
+  - `gpio-api-sysfs_gpio`
+    - provides a setup function for the TM1637Adapter that uses "sysfs_gpio"-crate as GPIO interface
+    - `tm1637_gpio_driver::sysfs_gpio::setup_sysfs_gpio()`
+    - this uses the "sysfs"-Interface which probably requires root/sudo when executed
+    - this uses the "sysfs"-Interface which probably requires root/sudo when executed
+  - `gpio-api-wiringpi`
+    - provides a setup function for the TM1637Adapter that uses "wiringpi"-crate as GPIO interface
+    - `tm1637_gpio_driver::sysfs_gpio::setup_wiringpi()`
+    - make sure "wiringpi" is installed on your Pi
 
 ## Does this work only on Raspberry Pi?
 Probably no! Although I can't test it because I don't have an Arduino or another similar device.

@@ -12,14 +12,7 @@ pub const DISPLAYS_COUNT: usize = 4;
 pub const SECOND: u64 = 1E6 as u64;
 
 pub fn run_demo(mut tm1637display: TM1637Adapter) {
-    // display "1 2 3 4"
-    let data: [u8; DISPLAYS_COUNT] = [
-        TM1637Adapter::encode_digit(1),
-        TM1637Adapter::encode_digit(2),
-        TM1637Adapter::encode_digit(3),
-        TM1637Adapter::encode_digit(4),
-    ];
-    tm1637display.write_segments_raw(&data, 0);
+
     sleep_busy_waiting(SECOND);
 
     // ##############################################################################

@@ -160,6 +160,14 @@ pub enum ISA {
 }
 
 impl TM1637Adapter {
+    /// Creates a new object to interact via GPIO with a TM1637.
+    ///
+    /// * `pin_clock_write_fn` function to write bit to CLK pin
+    /// * `pin_dio_write_fn` function to write bit to DIO pin
+    /// * `pin_dio_read_fn` function to read value from DIO pin
+    /// * `bit_delay_fn` function that is invoked after a bit has been written to a pin.
+    ///                  Probably 1 or even 0 µs are fine. This is just to be sure. It depends
+    ///                  on your hardware and your GPIO driver.
     pub fn new(pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
                pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,

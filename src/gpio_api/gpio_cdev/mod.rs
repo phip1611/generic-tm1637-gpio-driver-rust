@@ -44,7 +44,7 @@ impl LineState {
         ls.handle.replace(None);
         ls.handle.replace(Some(
             ls.line.request(
-                LineRequestFlags::INPUT, 0, &format!("tm1637-adapter-out-pin {}", ls.line.info().unwrap().line().offset())
+                LineRequestFlags::INPUT, 0, &format!("tm1637-adapter-in-pin {}", ls.line.info().unwrap().line().offset())
             ).unwrap()
         ));
     }

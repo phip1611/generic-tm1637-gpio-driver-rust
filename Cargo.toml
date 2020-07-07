@@ -1,6 +1,6 @@
 [package]
 name = "tm1637-gpio-driver"
-version = "1.2.2"
+version = "2.0.0"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
