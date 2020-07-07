@@ -1,3 +1,36 @@
+# 2.0.0
+### Breaking Changes
+- Simplified constructor for `TM1637Adapter`. Removed the "set mode function"-parameters.
+  ```
+  /// Creates a new object to interact via GPIO with a TM1637.
+  ///
+  /// * `pin_clock_write_fn` function to write bit to CLK pin
+  /// * `pin_dio_write_fn` function to write bit to DIO pin
+  /// * `pin_dio_read_fn` function to read value from DIO pin
+  /// * `bit_delay_fn` function that is invoked after a bit has been written to a pin.
+  ///                  Probably 1 or even 0 µs are fine. This is just to be sure. It depends
+  ///                  on your hardware and your GPIO driver.
+  pub fn new(pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
+             pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
+             pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,
+             bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {}
+  ```
+### New features
+- added the following crate features which can be activated in Cargo:
+  - `gpio-api-gpio_cdev`
+    - provides a setup function for the TM1637Adapter that uses "gpio_cdev"-crate as GPIO interface
+    - `tm1637_gpio_driver::gpio_cdev::setup_gpio_cdev()`
+    - this uses the character device driver-based api/interface in the Linux kernel
+    - **This is the RECOMMENDED, modern way!** Sysfs is deprecated
+  - `gpio-api-gpio`
+    - provides a setup function for the TM1637Adapter that uses "gpio"-crate as GPIO interface
+    - `tm1637_gpio_driver::gpio_api::setup_gpio()`
+    - this uses the "sysfs"-Interface which probably requires root/sudo when executed
+  - `gpio-api-sysfs_gpio`
+    - provides a setup function for the TM1637Adapter that uses "sysfs_gpio"-crate as GPIO interface
+    - `tm1637_gpio_driver::sysfs_gpio::setup_sysfs_gpio()`
+    - this uses the "sysfs"-Interface which probably requires root/sudo when executed
+
 # 1.2.2
 **breaking** Removed "n" parameter from `write_segments_raw` because Rust can figure out array length by itself.
 (I know that the version number indicates it's a minor update but this is such a small thing..)
