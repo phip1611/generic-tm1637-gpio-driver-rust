@@ -1,3 +1,6 @@
+# 2.0.1
+Fixed license in Cargo.toml.
+
 # 2.0.0
 ### Breaking Changes
 - Simplified constructor for `TM1637Adapter`. Removed the "set mode function"-parameters.
