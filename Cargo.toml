@@ -1,6 +1,6 @@
 [package]
 name = "tm1637-gpio-driver"
-version = "2.0.2"
+version = "2.0.3"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
@@ -11,7 +11,7 @@ exclude = [
 ]
 keywords = ["gpio", "tm1637"]
 categories = ["embedded", "no-std", "hardware-support" ]
-description = "Zero-dependency generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. Doesn't need std-lib and you can choose any GPIO interface/library you want."
+description = "Generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. Doesn't need std-lib and you can choose any GPIO interface/library you want."
 readme = "README.md"
 license = "MIT"
 homepage = "https://github.com/phip1611/generic-tm1637-gpio-driver-rust"
