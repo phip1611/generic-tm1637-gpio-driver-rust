@@ -1,3 +1,6 @@
+# 2.0.4
+Fixed Cargo.lock
+
 # 2.0.3
 Fixed README
 
