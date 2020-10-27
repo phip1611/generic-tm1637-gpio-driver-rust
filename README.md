@@ -1,6 +1,6 @@
 # Generic TM1637 GPIO Driver
 
-Zero-dependency generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. 
+Generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. 
 It is used in the 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
 Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
 interface/library on your own. 

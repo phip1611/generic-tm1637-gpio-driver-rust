@@ -9,7 +9,7 @@
 // Inspired by / Special thanks to:
 // https://github.com/avishorp/TM1637
 
-//! Zero-dependency generic GPIO driver for TM1637.
+//! Generic GPIO driver for TM1637.
 //! With this driver you can control for example the 4-digit 7-segment display from AZ-Delivery.
 //! This is not dependent on a specific GPIO library.
 //! This library was tested on a Raspberry Pi with its GPIO interface.
