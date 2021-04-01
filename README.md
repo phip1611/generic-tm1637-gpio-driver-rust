@@ -14,7 +14,7 @@ tm1637-gpio-driver = "<insert latest version>"
 tm1637-gpio-driver = { version = "<insert latest version>", default-features = false }
 ```
 ## Code
-```Rust
+```rust
 use std::thread::sleep;
 use std::time::Duration;
 use tm1637_gpio_driver::gpio_api::setup_gpio_cdev;
