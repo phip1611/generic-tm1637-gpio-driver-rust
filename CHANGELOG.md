@@ -1,8 +1,14 @@
+# 2.0.5
+- Updated README
+- Cargo.lock not longer checked in
+- updated dependencies
+
 # 2.0.4
 Fixed Cargo.lock
 
 # 2.0.3
-Fixed README
+- Fixed README
+- "main" instead of "master" branch
 
 # 2.0.2
 Crate feature `gpio-api-gpio_cdev` is now a default feature.

@@ -6,16 +6,15 @@ Generic means that it is not dependent on a specific GPIO interface. You can cho
 interface/library on your own. 
 
 # TL;DR: minimal setup
-```
-Cargo.toml:
-
+## Cargo.toml
+```toml
 [dependencies]
 tm1637-gpio-driver = "<insert latest version>"
-
-------------------------
-
-code.rs:
-
+# or if you need no_std
+tm1637-gpio-driver = { version = "<insert latest version>", default-features = false }
+```
+## Code
+```Rust
 use std::thread::sleep;
 use std::time::Duration;
 use tm1637_gpio_driver::gpio_api::setup_gpio_cdev;
@@ -42,10 +41,11 @@ fn main() {
 
 ---
 
- 
-This crate is `#[no_std]` An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
+## `no_std`
+This crate is `#![no_std]` An allocator is necessary on embedded systems because `extern crate alloc` (core library) is used.
+In `#![no_std]` you have to disable the default features in `Cargo.toml`.
 
-This driver could/should work with other displays too if they use a TM1637 micro controller with the same
+This driver works with other displays too if they use a TM1637 micro controller with the same
 I2C-like serial bus protocol specified in the [data sheet](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf).
 
 I created this library/driver for fun and to learn new things!
@@ -80,8 +80,9 @@ There are also utility functions on top of the driver in the module `fourdigit7s
 
 **To add this driver to your project just add the [crate](https://crates.io/crates/tm1637-gpio-driver) to your Rust project.**
 
-##### Supported GPIO interfaces/libs/crates
-As I already said it's independent. But I provide several setup functions in my driver.
+## Supported GPIO interfaces/libs/crates
+As I already said this crate is independent from a specific strategy to access GPIO. But I provide several setup 
+functions for different strategies as listed below (all of them need standard library). 
 To use them activate on of the features in your Cargo.toml:
   - `gpio-api-gpio_cdev`
     - provides a setup function for the TM1637Adapter that uses "gpio_cdev"-crate as GPIO interface
@@ -112,7 +113,7 @@ But yes, it was only tested using regular GPIO pins on my Raspberry Pi running R
  
 ### Who Am I?
 I'm Philipp :)
-Feel free to contribute on [Github](https://github.com/phip1611/generic-tm1637-gpio-driver-rust), write me an Email (phip1611@gmail.com) or
+Feel free to contribute on [Github](https://github.com/phip1611/generic-tm1637-gpio-driver-rust) or 
 message me on Twitter (https://twitter.com/phip1611)!
  
 ### Special thanks
@@ -135,9 +136,9 @@ I don't use any of the code. It just gave me some inspiration.
     - make sure your user is part of the "gpio" group
     - `sudo usermod -a -G gpio <your-user-name>` 
 - bit delay function: no difference between 1 and 100µs
-  - if you use thread::sleep() as your bit delay function then you gonna have a problem when it comes
+  - if you use `thread::sleep()` as your bit delay function then you gonna have a problem when it comes
     to a few micro seconds: the operating system (or better to say the hardware) is not fast enough
-    in switching threads in that time
+    for switching threads in that short period of time
   - in that case you should use a "busy waiting"-like approach that doesn't send the thread into sleep mode
     but wait in a loop until a certain time has been reached.
 
