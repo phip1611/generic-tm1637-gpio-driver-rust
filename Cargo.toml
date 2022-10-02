@@ -4,10 +4,10 @@ version = "2.0.5"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
 exclude = [
+    ".github",
     "example-moving-text.gif",
     "example-time.gif",
-    "examples/",
-    ".travis.yml"
+    "examples",
 ]
 keywords = ["gpio", "tm1637"]
 categories = ["embedded", "no-std", "hardware-support" ]
