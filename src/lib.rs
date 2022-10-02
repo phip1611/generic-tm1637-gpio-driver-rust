@@ -387,29 +387,20 @@ impl TM1637Adapter {
     /// for lowercase charts by their uppercase counterpart and vice versa.
     #[allow(clippy::cognitive_complexity)]
     #[allow(clippy::if_same_then_else)]
+    #[rustfmt::skip]
     pub const fn encode_char(c: char) -> u8 {
         // nums
-        if c == '0' {
-            NumCharBits::Zero as u8
-        } else if c == '1' {
-            NumCharBits::One as u8
-        } else if c == '2' {
-            NumCharBits::Two as u8
-        } else if c == '3' {
-            NumCharBits::Three as u8
-        } else if c == '4' {
-            NumCharBits::Four as u8
-        } else if c == '5' {
-            NumCharBits::Five as u8
-        } else if c == '6' {
-            NumCharBits::Six as u8
-        } else if c == '7' {
-            NumCharBits::Seven as u8
-        } else if c == '8' {
-            NumCharBits::Eight as u8
-        } else if c == '9' {
-            NumCharBits::Nine as u8
-        }
+        if c == '0' { NumCharBits::Zero as u8 }
+        else if c == '1' { NumCharBits::One as u8 }
+        else if c == '2' { NumCharBits::Two as u8 }
+        else if c == '3' { NumCharBits::Three as u8 }
+        else if c == '4' { NumCharBits::Four as u8 }
+        else if c == '5' { NumCharBits::Five as u8 }
+        else if c == '6' { NumCharBits::Six as u8 }
+        else if c == '7' { NumCharBits::Seven as u8 }
+        else if c == '8' { NumCharBits::Eight as u8 }
+        else if c == '9' { NumCharBits::Nine as u8 }
+
         // latin chars
         // we map as accurate as possible,
         // e.g.: a => lowercase a, A => uppercase A
@@ -417,103 +408,55 @@ impl TM1637Adapter {
         // but in cases where we only have on mapping available
         // like: b => lowercase b, B => undefined
         // we map B => lowercase b
-        else if c == 'A' {
-            UpCharBits::UpA as u8
-        } else if c == 'a' {
-            LoCharBits::LoA as u8
-        } else if c == 'B' {
-            LoCharBits::LoB as u8
-        } else if c == 'b' {
-            LoCharBits::LoB as u8
-        } else if c == 'C' {
-            UpCharBits::UpC as u8
-        } else if c == 'c' {
-            UpCharBits::UpC as u8
-        } else if c == 'D' {
-            LoCharBits::LoD as u8
-        } else if c == 'd' {
-            LoCharBits::LoD as u8
-        } else if c == 'E' {
-            UpCharBits::UpE as u8
-        } else if c == 'e' {
-            UpCharBits::UpE as u8
-        } else if c == 'F' {
-            UpCharBits::UpF as u8
-        } else if c == 'f' {
-            UpCharBits::UpF as u8
-        } else if c == 'G' {
-            UpCharBits::UpG as u8
-        } else if c == 'g' {
-            UpCharBits::UpG as u8
-        } else if c == 'H' {
-            UpCharBits::UpH as u8
-        } else if c == 'h' {
-            LoCharBits::LoH as u8
-        } else if c == 'I' {
-            UpCharBits::UpI as u8
-        } else if c == 'i' {
-            UpCharBits::UpI as u8
-        } else if c == 'J' {
-            UpCharBits::UpJ as u8
-        } else if c == 'j' {
-            UpCharBits::UpJ as u8
-        } else if c == 'L' {
-            UpCharBits::UpL as u8
-        } else if c == 'l' {
-            UpCharBits::UpL as u8
-        } else if c == 'N' {
-            LoCharBits::LoN as u8
-        } else if c == 'n' {
-            LoCharBits::LoN as u8
-        } else if c == 'O' {
-            UpCharBits::UpO as u8
-        } else if c == 'o' {
-            LoCharBits::LoO as u8
-        } else if c == 'P' {
-            UpCharBits::UpP as u8
-        } else if c == 'p' {
-            UpCharBits::UpP as u8
-        } else if c == 'Q' {
-            LoCharBits::LoQ as u8
-        } else if c == 'q' {
-            LoCharBits::LoQ as u8
-        } else if c == 'R' {
-            LoCharBits::LoR as u8
-        } else if c == 'r' {
-            LoCharBits::LoR as u8
-        } else if c == 'S' {
-            UpCharBits::UpS as u8
-        } else if c == 's' {
-            UpCharBits::UpS as u8
-        } else if c == 'T' {
-            LoCharBits::LoT as u8
-        } else if c == 't' {
-            LoCharBits::LoT as u8
-        } else if c == 'U' {
-            UpCharBits::UpU as u8
-        } else if c == 'u' {
-            LoCharBits::LoU as u8
-        } else if c == 'Y' {
-            LoCharBits::LoY as u8
-        } else if c == 'y' {
-            LoCharBits::LoY as u8
-        }
+        else if c == 'A' { UpCharBits::UpA as u8 }
+        else if c == 'a' { LoCharBits::LoA as u8 }
+        else if c == 'B' { LoCharBits::LoB as u8 }
+        else if c == 'b' { LoCharBits::LoB as u8 }
+        else if c == 'C' { UpCharBits::UpC as u8 }
+        else if c == 'c' { UpCharBits::UpC as u8 }
+        else if c == 'D' { LoCharBits::LoD as u8 }
+        else if c == 'd' { LoCharBits::LoD as u8 }
+        else if c == 'E' { UpCharBits::UpE as u8 }
+        else if c == 'e' { UpCharBits::UpE as u8 }
+        else if c == 'F' { UpCharBits::UpF as u8 }
+        else if c == 'f' { UpCharBits::UpF as u8 }
+        else if c == 'G' { UpCharBits::UpG as u8 }
+        else if c == 'g' { UpCharBits::UpG as u8 }
+        else if c == 'H' { UpCharBits::UpH as u8 }
+        else if c == 'h' { LoCharBits::LoH as u8 }
+        else if c == 'I' { UpCharBits::UpI as u8 }
+        else if c == 'i' { UpCharBits::UpI as u8 }
+        else if c == 'J' { UpCharBits::UpJ as u8 }
+        else if c == 'j' { UpCharBits::UpJ as u8 }
+        else if c == 'L' { UpCharBits::UpL as u8 }
+        else if c == 'l' { UpCharBits::UpL as u8 }
+        else if c == 'N' { LoCharBits::LoN as u8 }
+        else if c == 'n' { LoCharBits::LoN as u8 }
+        else if c == 'O' { UpCharBits::UpO as u8 }
+        else if c == 'o' { LoCharBits::LoO as u8 }
+        else if c == 'P' { UpCharBits::UpP as u8 }
+        else if c == 'p' { UpCharBits::UpP as u8 }
+        else if c == 'Q' { LoCharBits::LoQ as u8 }
+        else if c == 'q' { LoCharBits::LoQ as u8 }
+        else if c == 'R' { LoCharBits::LoR as u8 }
+        else if c == 'r' { LoCharBits::LoR as u8 }
+        else if c == 'S' { UpCharBits::UpS as u8 }
+        else if c == 's' { UpCharBits::UpS as u8 }
+        else if c == 'T' { LoCharBits::LoT as u8 }
+        else if c == 't' { LoCharBits::LoT as u8 }
+        else if c == 'U' { UpCharBits::UpU as u8 }
+        else if c == 'u' { LoCharBits::LoU as u8 }
+        else if c == 'Y' { LoCharBits::LoY as u8 }
+        else if c == 'y' { LoCharBits::LoY as u8 }
+
         // special chars
-        else if c == ' ' {
-            SpecialCharBits::Space as u8
-        } else if c == '?' {
-            SpecialCharBits::QuestionMark as u8
-        } else if c == '-' {
-            SpecialCharBits::Minus as u8
-        } else if c == '_' {
-            SpecialCharBits::Underscore as u8
-        } else if c == '=' {
-            SpecialCharBits::Equals as u8
-        } else if c == '.' {
-            SpecialCharBits::Dot as u8
-        } else {
-            SpecialCharBits::Space as u8
-        }
+        else if c == ' ' { SpecialCharBits::Space as u8 }
+        else if c == '?' { SpecialCharBits::QuestionMark as u8 }
+        else if c == '-' { SpecialCharBits::Minus as u8 }
+        else if c == '_' { SpecialCharBits::Underscore as u8 }
+        else if c == '=' { SpecialCharBits::Equals as u8 }
+        else if c == '.' { SpecialCharBits::Dot as u8 }
+        else { SpecialCharBits::Space as u8 }
     }
 
     /// Encodes a string for the 7-segment display. This uses
