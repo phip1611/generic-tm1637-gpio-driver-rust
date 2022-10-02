@@ -1,9 +1,9 @@
 # Generic TM1637 GPIO Driver
 
-Generic GPIO driver for the TM1637 micro controller, primarily for educational purpose. 
-It is used in the 4-digit 7-segment display by AZ-Delivery [(Link)](https://www.az-delivery.de/products/4-digit-display).
-Generic means that it is not dependent on a specific GPIO interface. You can choose the GPIO 
-interface/library on your own. 
+Generic GPIO driver for the TM1637 microcontroller, primarily for educational purpose. 
+For example, the TM1637 built into the 4-digit 7-segment display by AZ-Delivery 
+[(Link)](https://www.az-delivery.de/products/4-digit-display). Generic means that it is not 
+dependent on a specific GPIO interface. You can choose the GPIO interface/library on your own. 
 
 # TL;DR: minimal setup
 ## Cargo.toml
@@ -128,7 +128,7 @@ I don't use any of the code. It just gave me some inspiration.
 ### Troubleshooting
 - Data is not correctly displayed on display
   - either your device is broken (I ordered 3 and 1 of 3 were broken) or you probably have
-    a to high frequency. Make sure the bit-delay for `TM1637Adapter::new` is not too short.
+    a too high frequency. Make sure the bit-delay for `TM1637Adapter::new` is not too short.
     100µs on Raspberry Pi should be totally fine (but 1µs worked also for me) 
   - check cables and GPIO-pins (clk, dio)
 - Raspberry Pi / Raspberry Pi OS
@@ -141,6 +141,9 @@ I don't use any of the code. It just gave me some inspiration.
     for switching threads in that short period of time
   - in that case you should use a "busy waiting"-like approach that doesn't send the thread into sleep mode
     but wait in a loop until a certain time has been reached.
+
+### MSRV
+The MSRV is `1.52.1`.
 
 ### Trivia
 - There is another library on crates.io for the TM1637: https://github.com/igelbox/tm1637-rs
