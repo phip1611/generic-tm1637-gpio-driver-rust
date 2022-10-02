@@ -179,17 +179,10 @@ pub enum ISA {
     /// Start instruction. "write data to display register"-mode.
     DataCommandWriteToDisplay = 0b0100_0000,
 
-    // send this + <recv ack> + send byte 0 + <recv ack> + ... send byte 3
-    /// Starts at display address zero. Each further byte that is send will go
-    /// into the next display address. The micro controller does an internal auto increment
-    /// of the address. See the data sheet for more information.
-    AddressCommandD0 = 0b1100_0000,
-    /// Like [`Self::AddressCommandD0`] but start at display 1.
-    AddressCommandD1 = 0b1100_0001,
-    /// Like [`Self::AddressCommandD0`] but start at display 2.
-    AddressCommandD2 = 0b1100_0010,
-    /// Like [`Self::AddressCommandD0`] but start at display 3.
-    AddressCommandD3 = 0b1100_0011,
+    /// Base command for the display address. Bits 2-0 specify the display (0-5).
+    /// If not deactivated, the device does an internal increment of ths display address
+    /// as bytes are written.
+    AddressCommandBase = 0b1100_0000,
 
     /// Base Command for writing to the display. Needs to be ORed with [`Brightness`] and
     /// [`DisplayState`]. The base command alone set's the display off.
@@ -285,7 +278,7 @@ impl TM1637Adapter {
 
         // Command 2
         self.start();
-        self.write_byte_and_wait_ack(ISA::AddressCommandD0 as u8 | pos);
+        self.write_byte_and_wait_ack(ISA::AddressCommandBase as u8 | (pos & 0x3));
 
         // Write the remaining data bytes
         // TM1637 does auto increment internally
