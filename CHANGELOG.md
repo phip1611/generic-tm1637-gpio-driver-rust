@@ -1,6 +1,11 @@
+# 2.0.6 (2022-10-02)
+- dependency updates
+- internal code improvements
+- documentation improvements
+
 # 2.0.5
 - Updated README
-- Cargo.lock not longer checked in
+- Cargo.lock no longer checked in
 - updated dependencies
 
 # 2.0.4
