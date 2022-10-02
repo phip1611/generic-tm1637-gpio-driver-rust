@@ -3,6 +3,7 @@ name = "tm1637-example"
 version = "0.1.0"
 authors = ["Philipp Schuster <phip1611@gmail.com>"]
 edition = "2018"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -18,4 +19,4 @@ path = "../"
 features = ["gpio-api-wiringpi", "gpio-api-sysfs_gpio", "gpio-api-gpio", "gpio-api-gpio_cdev"]
 
 [dependencies]
-chrono = "0.4.12"
+chrono = "0.4.22"

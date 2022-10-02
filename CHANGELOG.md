@@ -1,6 +1,11 @@
+# 2.0.6 (2022-10-02)
+- dependency updates
+- internal code improvements
+- documentation improvements
+
 # 2.0.5
 - Updated README
-- Cargo.lock not longer checked in
+- Cargo.lock no longer checked in
 - updated dependencies
 
 # 2.0.4
@@ -31,7 +36,7 @@ Fixed license in Cargo.toml.
   pub fn new(pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
              pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
              pin_dio_read_fn: Box<dyn Fn() -> GpioPinValue>,
-             bit_delay_fn: Box<dyn Fn() -> ()>) -> TM1637Adapter {}
+             bit_delay_fn: Box<dyn Fn()>) -> TM1637Adapter {}
   ```
 ### New features
 - added the following crate features which can be activated in Cargo:

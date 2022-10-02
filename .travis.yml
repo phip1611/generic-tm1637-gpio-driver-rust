@@ -1,9 +1,0 @@
-language: rust
-rust:
-  - stable
-
-script:
-  - cargo build --all-targets --features dummy,gpio-api-gpio_cdev,gpio-api-sysfs_gpio,gpio-api-gpio # test build works; wiringpi will not compile on travis CI
-  - cargo test --all-targets --features dummy,gpio-api-gpio_cdev,gpio-api-sysfs_gpio,gpio-api-gpio # tests must work
-  - rustup target add thumbv7em-none-eabihf
-  - cargo check --target thumbv7em-none-eabihf --no-default-features # test no_std-build works
