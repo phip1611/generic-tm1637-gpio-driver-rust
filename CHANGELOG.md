@@ -71,12 +71,12 @@ Fixed license in Cargo.toml.
 - Bugfix in `fourdigit7segdis::display_text_banner_in_loop`
 - **breaking**: renamed module `external_api` to `gpio_api`
 - added `gpio_api::setup_dummy()` to support debugging in systems that don't
-  have a GPIO interface, like Mac for example 
+  have a GPIO interface, like Mac for example
 
 # 1.1.4
 Fix in README example.
 
-# 1.1.3 
+# 1.1.3
 More small code improvements + comments.
 
 # 1.1.2
