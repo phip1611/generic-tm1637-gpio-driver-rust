@@ -27,8 +27,8 @@
 /// We have 4 displays so we can display 4 digits.
 pub const DISPLAY_COUNT: usize = 4;
 
-use crate::{TM1637Adapter, DisplayState, Brightness};
 use crate::mappings::SegmentBits;
+use crate::{Brightness, DisplayState, TM1637Adapter};
 use alloc::string::String;
 
 /// Displays a text over and over again. The text will move "animated" accross the
@@ -39,7 +39,7 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     adapter.set_brightness(Brightness::L7);
 
     // remove dots because this display only has one double point which looks weird.
-    let data = text.replace(".", " ");
+    let data = text.replace('.', " ");
     let data = TM1637Adapter::encode_string(&data);
 
     // +1 because the upper border in a range is exclusive
@@ -50,7 +50,7 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
     loop {
         for x in 0..to {
             let data_slice = &data[x..(x + DISPLAY_COUNT)];
-            adapter.write_segments_raw(data_slice,  0);
+            adapter.write_segments_raw(data_slice, 0);
             sleep_fn();
         }
     }
@@ -58,9 +58,11 @@ pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, slee
 
 /// Displays "hh:mm" with blinking double point on the display.
 /// Blocks the calling thread because this is an infinite loop.
-pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
-                            tick_fn: &dyn Fn(),
-                            time_fn: &dyn Fn() -> (String, String)) {
+pub fn display_current_time_in_loop(
+    adapter: &mut TM1637Adapter,
+    tick_fn: &dyn Fn(),
+    time_fn: &dyn Fn() -> (String, String),
+) {
     adapter.set_display_state(DisplayState::ON);
     adapter.set_brightness(Brightness::L7);
 
@@ -68,6 +70,7 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
     loop {
         // could be hh:mm or mm::ss
         let (l, r): (String, String) = (time_fn)();
+        #[allow(clippy::iter_nth_zero)]
         let mut data: [u8; DISPLAY_COUNT] = [
             TM1637Adapter::encode_char(l.chars().nth(0).unwrap()),
             TM1637Adapter::encode_char(l.chars().nth(1).unwrap()),
@@ -76,7 +79,7 @@ pub fn display_current_time_in_loop(adapter: &mut TM1637Adapter,
         ];
 
         if show_dots {
-            data[1] = data[1] | SegmentBits::SegPoint as u8;
+            data[1] |= SegmentBits::SegPoint as u8;
         }
 
         adapter.write_segments_raw(&data, 0);
@@ -129,12 +132,11 @@ pub fn display_timer(adapter: &mut TM1637Adapter, sleep_fn: &dyn Fn(), from_val:
 
     // blinking with just zeros to show that timer is done
     for i in 0..4 {
-        let data;
-        if i % 2 == 0 {
-            data = [0; 4];
+        let data = if i % 2 == 0 {
+            [0; 4]
         } else {
-            data = [TM1637Adapter::encode_digit(0); 4];
-        }
+            [TM1637Adapter::encode_digit(0); 4]
+        };
         adapter.write_segments_raw(&data, 0);
         sleep_fn(); // probably this is always a function that sleeps 1s => 1Hz frequency
     }

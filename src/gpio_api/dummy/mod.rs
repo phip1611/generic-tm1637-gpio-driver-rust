@@ -23,9 +23,9 @@
 //! This module is only for testing with a dummy. This way I can execute it on my
 //! Mac without an actual GPIO interface. Because of this I can set breakpoints and so on..
 
+use crate::GpioPinValue::LOW;
 use crate::TM1637Adapter;
 use alloc::boxed::Box;
-use crate::GpioPinValue::LOW;
 
 /// Setups a dummy Adapter for testing.
 pub fn setup_dummy() -> TM1637Adapter {
@@ -46,12 +46,11 @@ pub fn setup_dummy() -> TM1637Adapter {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
     use super::*;
 
     #[test]
     fn test() {
-        let mut f = setup_dummy();
+        let _ = setup_dummy();
         // don't check in because this breaks the CI build because of the infinite loop
         //fourdigit7segdis::display_text_banner_in_loop(&mut f, "    Hallo", &|| {});
     }

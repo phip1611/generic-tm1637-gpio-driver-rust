@@ -35,7 +35,7 @@ pub use super::gpio_api::wiringpi::setup_wiringpi;
 // #############################################################################
 
 // uses "gpio"-crate. This uses sysfs, which will be deprecated in linux kernel in 2020
-// see https://crates.io/crates/gpio-cdev
+// see <https://crates.io/crates/gpio-cdev>
 #[cfg(feature = "gpio-api-gpio")]
 mod gpio;
 #[cfg(feature = "gpio-api-gpio")]
