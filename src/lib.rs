@@ -233,7 +233,7 @@ impl TM1637Adapter {
     /// This setting is not committed until a write operation has been made.
     pub fn set_brightness(&mut self, brightness: Brightness) {
         // look if display is configured as on
-        let display_on = self.brightness as u8 & DisplayState::ON as u8;
+        let display_on = self.brightness & DisplayState::ON as u8;
         self.brightness = display_on | brightness as u8;
     }
 
