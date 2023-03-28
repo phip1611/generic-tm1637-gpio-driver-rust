@@ -19,4 +19,4 @@ path = "../"
 features = ["gpio-api-wiringpi", "gpio-api-sysfs_gpio", "gpio-api-gpio", "gpio-api-gpio_cdev"]
 
 [dependencies]
-chrono = "0.4.22"
+time = "0.3.20"
