@@ -59,7 +59,7 @@ fn pin_write_fn_factory(
 ) -> Box<dyn Fn(GpioPinValue)> {
     Box::from(move |bit| {
         let pin = gpio.output_pin(gpio_pin_num);
-        if let GpioPinValue::HIGH = bit {
+        if matches!(bit, GpioPinValue::HIGH) {
             pin.digital_write(WiringPiVal::High);
         } else {
             pin.digital_write(WiringPiVal::Low);
