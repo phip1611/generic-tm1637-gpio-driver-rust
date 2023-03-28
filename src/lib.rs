@@ -462,7 +462,7 @@ impl TM1637Adapter {
     /// Encodes a string for the 7-segment display. This uses
     /// `encode_char` for each character.
     pub fn encode_string(str: &str) -> Vec<u8> {
-        str.chars().into_iter().map(Self::encode_char).collect()
+        str.chars().map(Self::encode_char).collect()
     }
 
     /// This tells the TM1637 that data input starts.

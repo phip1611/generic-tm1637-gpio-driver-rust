@@ -1,6 +1,5 @@
 use std::ops::Add;
 use std::time::{Duration, Instant};
-use chrono::Local;
 use tm1637_gpio_driver::{Brightness, DisplayState, TM1637Adapter};
 use tm1637_gpio_driver::fourdigit7segdis::{display_current_time_in_loop, display_stopwatch, display_timer, STOPWATCH_MAX};
 use tm1637_gpio_driver::mappings::SpecialCharBits;
@@ -78,15 +77,9 @@ pub fn run_demo(mut tm1637display: TM1637Adapter) {
     // 1Hz: blinking double point clock (hh:mm)
     let tick_fn = || sleep_busy_waiting(SECOND);
     let time_fn = || {
-        let date = Local::now();
-
-        // this is not so nice but I don't know a better solution
-
-        //let l = date.format("%H").to_string();
-        let l = date.format("%H").to_string();
-        //let r = date.format("%S").to_string();
-        let r = date.format("%M").to_string();
-        // println!("{}:{}", l, r);
+        let date = time::OffsetDateTime::now_utc();
+        let l = format!("{:02}", date.hour());
+        let r = format!("{:02}", date.minute());
         (l, r)
     };
     display_current_time_in_loop(&mut tm1637display, &tick_fn, &time_fn);
