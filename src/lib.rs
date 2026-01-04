@@ -163,7 +163,7 @@ pub enum Brightness {
 /// The TM1637 "DisplayControl"-command transports the display on/off information
 /// in the third bit (2^3) of the command.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DisplayState {
     /// Display off.
     OFF = 0b0000,
