@@ -139,7 +139,7 @@ impl Debug for TM1637Adapter {
 /// The TM1637 "DisplayControl"-command transports the brightness information
 /// in bits 0 to 2.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Brightness {
     /// Brightness level 0. Lowest brightness.
     L0 = 0b000,
