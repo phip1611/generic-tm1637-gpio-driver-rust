@@ -174,7 +174,7 @@ pub enum DisplayState {
 /// The "ISA"/Commands of the TM1637. See data sheet
 /// for more information. This is only a subset of the possible values.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ISA {
     /// Start instruction. "write data to display register"-mode.
     DataCommandWriteToDisplay = 0b0100_0000,
