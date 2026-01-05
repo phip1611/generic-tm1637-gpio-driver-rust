@@ -29,8 +29,8 @@
 use crate::{GpioPinValue, TM1637Adapter};
 use alloc::boxed::Box;
 use alloc::rc::Rc;
-use wiringpi::pin::Value as WiringPiVal;
 use wiringpi::WiringPi;
+use wiringpi::pin::Value as WiringPiVal;
 
 /// Sets up the TM1637 Adapter using WiringPi as GPIO interface.
 pub fn setup_wiringpi(clk_pin: u16, dio_pin: u16, bit_delay_fn: Box<dyn Fn()>) -> TM1637Adapter {

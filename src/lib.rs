@@ -91,11 +91,7 @@ pub enum GpioPinValue {
 
 impl From<u8> for GpioPinValue {
     fn from(x: u8) -> Self {
-        if x == 0 {
-            Self::LOW
-        } else {
-            Self::HIGH
-        }
+        if x == 0 { Self::LOW } else { Self::HIGH }
     }
 }
 
