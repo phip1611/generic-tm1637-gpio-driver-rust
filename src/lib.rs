@@ -139,7 +139,7 @@ impl Debug for TM1637Adapter {
 /// The TM1637 "DisplayControl"-command transports the brightness information
 /// in bits 0 to 2.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Brightness {
     /// Brightness level 0. Lowest brightness.
     L0 = 0b000,
@@ -163,7 +163,7 @@ pub enum Brightness {
 /// The TM1637 "DisplayControl"-command transports the display on/off information
 /// in the third bit (2^3) of the command.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DisplayState {
     /// Display off.
     OFF = 0b0000,
@@ -174,7 +174,7 @@ pub enum DisplayState {
 /// The "ISA"/Commands of the TM1637. See data sheet
 /// for more information. This is only a subset of the possible values.
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ISA {
     /// Start instruction. "write data to display register"-mode.
     DataCommandWriteToDisplay = 0b0100_0000,
