@@ -31,7 +31,7 @@ use crate::mappings::SegmentBits;
 use crate::{Brightness, DisplayState, TM1637Adapter};
 use alloc::string::String;
 
-/// Displays a text over and over again. The text will move "animated" accross the
+/// Displays a text over and over again. The text will move "animated" across the
 /// screen from right to left.
 /// Blocks the calling thread because this is an infinite loop.
 pub fn display_text_banner_in_loop(adapter: &mut TM1637Adapter, text: &str, sleep_fn: &dyn Fn()) {

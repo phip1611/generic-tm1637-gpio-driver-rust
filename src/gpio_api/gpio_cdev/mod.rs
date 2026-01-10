@@ -34,7 +34,7 @@ use gpio_cdev::{Chip, Line, LineHandle, LineRequestFlags};
 
 /// Describes the persistent info/state of a "line" which is a Pin in the
 /// character device driver-based terminology. We need this to retain control of
-/// Pins accross multiple invocations. Otherwise Pins are released immediately.
+/// Pins across multiple invocations. Otherwise Pins are released immediately.
 struct LineState {
     line: Line,
     handle: RefCell<Option<LineHandle>>,
@@ -86,6 +86,7 @@ impl LineState {
 }
 
 /// Sets up the Driver using "gpio-cdev"-crate as GPIO interface/library.
+///
 /// This is better than wiringpi or "sysfs" because it uses the modern
 /// character device based API/Driver in the linux kernel.
 /// See <https://docs.rs/gpio-cdev/0.3.0/gpio_cdev/>

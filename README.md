@@ -109,7 +109,7 @@ This should work on every device where you can write a Rust program for. Since t
 uses no standard library this should work on embedded devices. If you use it let me know
 what things you've built!
 
-But yes, it was only tested using regular GPIO pins on my Raspberry Pi running Rasbperry Pi OS so far.
+But yes, it was only tested using regular GPIO pins on my Raspberry Pi running Raspberry Pi OS so far.
 
 ### Who Am I?
 I'm Philipp :)
