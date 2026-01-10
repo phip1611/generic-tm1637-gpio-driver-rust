@@ -177,7 +177,7 @@ pub enum ISA {
     DataCommandWriteToDisplay = 0b0100_0000,
 
     /// Base command for the display address. Bits 2-0 specify the display (0-5).
-    /// If not deactivated, the device does an internal increment of ths display address
+    /// If not deactivated, the device does an internal increment of the display address
     /// as bytes are written.
     AddressCommandBase = 0b1100_0000,
 
@@ -245,7 +245,7 @@ impl TM1637Adapter {
     ///   this is 0, if you want to write data to all 7 segment displays.
     pub fn write_segments_raw(&self, segments: &[u8], pos: u8) {
         let mut n = segments.len() as u8;
-        // beeing a little bit more failure tolerant
+        // being a little bit more failure tolerant
         if n == 0 {
             return;
         } // nothing to do

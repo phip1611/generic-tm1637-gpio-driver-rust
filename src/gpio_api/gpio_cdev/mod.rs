@@ -34,7 +34,7 @@ use gpio_cdev::{Chip, Line, LineHandle, LineRequestFlags};
 
 /// Describes the persistent info/state of a "line" which is a Pin in the
 /// character device driver-based terminology. We need this to retain control of
-/// Pins accross multiple invocations. Otherwise Pins are released immediately.
+/// Pins across multiple invocations. Otherwise Pins are released immediately.
 struct LineState {
     line: Line,
     handle: RefCell<Option<LineHandle>>,
