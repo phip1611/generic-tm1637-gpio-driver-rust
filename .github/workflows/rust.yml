@@ -17,13 +17,13 @@ jobs:
           - 1.85.0 # MSVR
     steps:
       - uses: actions/checkout@v2
-      # Important preparation step: override the latest default Rust version in GitHub CI
-      # with the current value of the iteration in the "strategy.matrix.rust"-array.
-      - uses: actions-rs/toolchain@v1
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: default
-          toolchain: ${{ matrix.rust }}
-          override: true
+          toolchain: "${{ matrix.rust }}"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: "${{ github.job }}-${{ matrix.rust }}"
       - name: Check
         run: cargo check --all-targets --verbose --all-features
       - name: Build
@@ -41,15 +41,14 @@ jobs:
           - 1.85.0 # MSVR
     steps:
       - uses: actions/checkout@v2
-      # Important preparation step: override the latest default Rust version in GitHub CI
-      # with the current value of the iteration in the "strategy.matrix.rust"-array.
-      - uses: actions-rs/toolchain@v1
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: default
-          toolchain: ${{ matrix.rust }}
-          # some no_std target
-          target: thumbv7em-none-eabihf
-          override: true
+          toolchain: "${{ matrix.rust }}"
+          targets: thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: "${{ github.job }}-${{ matrix.rust }}"
       - name: Build
         run: cargo build --no-default-features --verbose --target thumbv7em-none-eabihf
 
