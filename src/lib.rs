@@ -96,6 +96,7 @@ impl From<u8> for GpioPinValue {
 }
 
 /// Adapter between your code and the TM1637 via GPIO interface.
+///
 /// You can use the GPIO interface/library that you want. Just provide
 /// the corresponding "glue" functions so that this adapter can access GPIO.
 ///
@@ -194,7 +195,7 @@ impl TM1637Adapter {
     /// * `pin_dio_write_fn` function to write bit to DIO pin
     /// * `pin_dio_read_fn` function to read value from DIO pin
     /// * `bit_delay_fn` function that is invoked after a bit has been written to a pin.
-    ///                  It depends on your hardware and your GPIO driver. Sometimes 0 is even fine.
+    ///   It depends on your hardware and your GPIO driver. Sometimes 0 is even fine.
     pub fn new(
         pin_clock_write_fn: Box<dyn Fn(GpioPinValue)>,
         pin_dio_write_fn: Box<dyn Fn(GpioPinValue)>,
@@ -217,7 +218,7 @@ impl TM1637Adapter {
     /// Sets the display state. The display state is the 3rd bit of the
     /// "display control"-command.
     /// This setting is not committed until a write operation has been made.
-    pub fn set_display_state(&mut self, ds: DisplayState) {
+    pub const fn set_display_state(&mut self, ds: DisplayState) {
         // keep old state for brightness
         let old_brightness = self.brightness & 0b0000_0111;
         // take 3rd bit (the one that says display on/off) into the new value
@@ -227,7 +228,7 @@ impl TM1637Adapter {
     /// Sets the brightness of the screen. The brightness are the lower
     /// 3 bits of the "display control"-command.
     /// This setting is not committed until a write operation has been made.
-    pub fn set_brightness(&mut self, brightness: Brightness) {
+    pub const fn set_brightness(&mut self, brightness: Brightness) {
         // look if display is configured as on
         let display_on = self.brightness & DisplayState::ON as u8;
         self.brightness = display_on | brightness as u8;
@@ -240,9 +241,8 @@ impl TM1637Adapter {
     /// * `segments` Raw data describing the bits of the 7 segment display.
     /// * `n` Length of segments array.
     /// * `pos` The start position of the display register. While bytes are
-    ///         written, address is adjusted internally via auto increment.
-    ///         Usually this is 0, if you want to write data to all 7 segment
-    ///         displays.
+    ///   written, address is adjusted internally via auto increment. Usually
+    ///   this is 0, if you want to write data to all 7 segment displays.
     pub fn write_segments_raw(&self, segments: &[u8], pos: u8) {
         let mut n = segments.len() as u8;
         // beeing a little bit more failure tolerant
