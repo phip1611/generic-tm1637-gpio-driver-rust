@@ -55,7 +55,7 @@ impl PinKind {
     }
 
     fn in_pin(&mut self) -> &mut SysFsGpioInput {
-        if let Self::In(ref mut pin) = self {
+        if let Self::In(pin) = self {
             pin
         } else {
             panic!("Not an input pin!")
@@ -63,7 +63,7 @@ impl PinKind {
     }
 
     fn out_pin(&mut self) -> &mut SysFsGpioOutput {
-        if let Self::Out(ref mut pin) = self {
+        if let Self::Out(pin) = self {
             pin
         } else {
             panic!("Not an output pin!")
