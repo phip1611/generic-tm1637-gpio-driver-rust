@@ -68,13 +68,11 @@ jobs:
           - stable
     steps:
       - uses: actions/checkout@v7
-      # Important preparation step: override the latest default Rust version in GitHub CI
-      # with the current value of the iteration in the "strategy.matrix.rust"-array.
-      - uses: actions-rs/toolchain@v1
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: default
           toolchain: ${{ matrix.rust }}
-          override: true
+          components: clippy, rustfmt
       - name: Rustfmt
         run: cargo fmt -- --check
       - name: Clippy
